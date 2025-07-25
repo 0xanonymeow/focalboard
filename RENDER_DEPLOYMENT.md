@@ -53,15 +53,18 @@ Simple guide to deploy Focalboard on Render.com using the free tier.
 ### 3. File Storage Setup (Choose One)
 
 **Option A: Local Storage (Simple, files lost on restart)**
+
 ```
 FOCALBOARD_FILESDRIVER=local
 FOCALBOARD_FILESPATH=./data/files
 ```
 
 **Option B: AWS S3 (Persistent storage)**
+
 1. Create AWS S3 bucket
 2. Create IAM user with S3 access
 3. Add these environment variables:
+
 ```
 FOCALBOARD_FILESDRIVER=amazons3
 FOCALBOARD_FILESS3CONFIG_BUCKET=your-bucket-name
@@ -69,9 +72,11 @@ FOCALBOARD_FILESS3CONFIG_REGION=us-east-1
 FOCALBOARD_FILESS3CONFIG_ACCESSKEYID=your-access-key
 FOCALBOARD_FILESS3CONFIG_SECRETACCESSKEY=your-secret-key
 FOCALBOARD_FILESS3CONFIG_SSL=true
+FOCALBOARD_FILESS3CONFIG_TIMEOUT=300000 
 ```
 
 **Option C: Cloudflare R2 (S3-compatible, cheaper)**
+
 1. **Create R2 bucket**:
    - Go to Cloudflare Dashboard → R2 Object Storage
    - Click "Create bucket"
@@ -86,19 +91,23 @@ FOCALBOARD_FILESS3CONFIG_SSL=true
    - **Important**: Copy both the **Access Key ID** and **Secret Access Key** immediately (Secret Access Key is only shown once)
    - Note your **Account ID** from the R2 dashboard
 3. **Add these environment variables**:
+
 ```
 FOCALBOARD_FILESDRIVER=amazons3
 FOCALBOARD_FILESS3CONFIG_BUCKET=your-bucket-name
 FOCALBOARD_FILESS3CONFIG_REGION=auto
 FOCALBOARD_FILESS3CONFIG_ACCESSKEYID=your-access-key-id
 FOCALBOARD_FILESS3CONFIG_SECRETACCESSKEY=your-secret-access-key
-FOCALBOARD_FILESS3CONFIG_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
+FOCALBOARD_FILESS3CONFIG_ENDPOINT=your-account-id.r2.cloudflarestorage.com
 FOCALBOARD_FILESS3CONFIG_SSL=true
+FOCALBOARD_FILESS3CONFIG_TIMEOUT=30000
 ```
+
 Replace:
+
 - `your-bucket-name`: Your R2 bucket name
 - `your-access-key-id`: Access Key ID from step 2
-- `your-secret-access-key`: Secret Access Key from step 2  
+- `your-secret-access-key`: Secret Access Key from step 2
 - `your-account-id`: Your Cloudflare Account ID
 
 ### 4. Environment Variables
@@ -127,6 +136,7 @@ FOCALBOARD_ENABLEPUBLICSHAREDBOARDS=false
 ### 6. Add Server Root (After Deployment)
 
 **Option A: Use Render's default URL**
+
 1. Once deployed, note your actual Render URL (e.g., `https://focalboard-abc123.onrender.com`)
 2. Go to your service → Environment
 3. Add this environment variable:
@@ -136,6 +146,7 @@ FOCALBOARD_ENABLEPUBLICSHAREDBOARDS=false
 4. Click "Save Changes" - this will trigger a redeploy
 
 **Option B: Use your own custom domain**
+
 1. Set up custom domain in Render:
    - Go to your service → Settings → Custom Domains
    - Add your domain (e.g., `focalboard.yourdomain.com`)
@@ -149,10 +160,10 @@ FOCALBOARD_ENABLEPUBLICSHAREDBOARDS=false
 ## Notes
 
 - **Free tier limitations**: App sleeps after 15 minutes of inactivity
-- **Storage**: 
+- **Storage**:
   - Local: Files lost on restart (free)
   - S3/R2: Persistent storage (small cost for storage)
-- **Database options**: 
+- **Database options**:
   - Render PostgreSQL: 1GB storage, expires after 90 days
   - Supabase PostgreSQL: 500MB storage, no expiration, includes dashboard
 - **Environment variables**: Your fixes ensure proper configuration override

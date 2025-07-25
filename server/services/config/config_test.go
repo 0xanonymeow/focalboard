@@ -114,6 +114,25 @@ func TestEnvironmentVariableOverrides(t *testing.T) {
 		}
 		assert.Equal(t, expected, config.FeatureFlags)
 	})
+
+	// Test S3 endpoint sanitization
+	t.Run("S3 endpoint sanitization", func(t *testing.T) {
+		cleanupViper()
+		
+		os.Setenv("FOCALBOARD_FILESDRIVER", "amazons3")
+		os.Setenv("FOCALBOARD_FILESS3CONFIG_ENDPOINT", "https://account.r2.cloudflarestorage.com")
+		defer func() {
+			os.Unsetenv("FOCALBOARD_FILESDRIVER")
+			os.Unsetenv("FOCALBOARD_FILESS3CONFIG_ENDPOINT")
+			cleanupViper()
+		}()
+
+		config, err := ReadConfigFile("")
+		require.NoError(t, err)
+
+		assert.Equal(t, "amazons3", config.FilesDriver)
+		assert.Equal(t, "account.r2.cloudflarestorage.com", config.FilesS3Config.Endpoint)
+	})
 }
 
 func TestParseFeatureFlags(t *testing.T) {
@@ -165,6 +184,57 @@ func TestParseFeatureFlags(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := parseFeatureFlags(tt.input)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestSanitizeS3Endpoint(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "HTTPS URL with domain",
+			input:    "https://account.r2.cloudflarestorage.com",
+			expected: "account.r2.cloudflarestorage.com",
+		},
+		{
+			name:     "HTTP URL with localhost and port",
+			input:    "http://localhost:9000",
+			expected: "localhost:9000",
+		},
+		{
+			name:     "URL with path",
+			input:    "https://s3.amazonaws.com/bucket/path",
+			expected: "s3.amazonaws.com",
+		},
+		{
+			name:     "Plain hostname",
+			input:    "s3.amazonaws.com",
+			expected: "s3.amazonaws.com",
+		},
+		{
+			name:     "Hostname with port",
+			input:    "minio.local:9000",
+			expected: "minio.local:9000",
+		},
+		{
+			name:     "Empty string",
+			input:    "",
+			expected: "",
+		},
+		{
+			name:     "URL with trailing slash",
+			input:    "https://storage.googleapis.com/",
+			expected: "storage.googleapis.com",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := sanitizeS3Endpoint(tt.input)
 			assert.Equal(t, tt.expected, result)
 		})
 	}

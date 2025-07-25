@@ -254,8 +254,38 @@ func applyEnvironmentOverridesPost(config *Configuration) {
 		}
 	}
 
+	// Sanitize S3 endpoint to conform with Mattermost filestore expectations
+	if config.FilesDriver == "amazons3" && config.FilesS3Config.Endpoint != "" {
+		config.FilesS3Config.Endpoint = sanitizeS3Endpoint(config.FilesS3Config.Endpoint)
+	}
+
 	// Note: Other FOCALBOARD_ environment variables are now handled automatically by Viper
 	// since we set up environment variable support AFTER reading the config file
+}
+
+// sanitizeS3Endpoint removes protocol and paths from S3 endpoint URL to conform with Mattermost filestore expectations
+// Mattermost expects endpoint format: "hostname" or "hostname:port" (no protocol, no paths)
+// Examples:
+// - "https://account.r2.cloudflarestorage.com" -> "account.r2.cloudflarestorage.com"
+// - "http://localhost:9000/path" -> "localhost:9000"
+func sanitizeS3Endpoint(endpoint string) string {
+	if endpoint == "" {
+		return endpoint
+	}
+
+	// Remove protocol (http:// or https://)
+	endpoint = strings.TrimPrefix(endpoint, "https://")
+	endpoint = strings.TrimPrefix(endpoint, "http://")
+
+	// Remove any path components (everything after the first '/')
+	if slashIndex := strings.Index(endpoint, "/"); slashIndex != -1 {
+		endpoint = endpoint[:slashIndex]
+	}
+
+	// Remove trailing colon if present (but preserve port numbers)
+	endpoint = strings.TrimSuffix(endpoint, ":")
+
+	return endpoint
 }
 
 // parseFeatureFlags parses feature flags from environment variable format

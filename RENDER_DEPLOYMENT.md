@@ -72,22 +72,34 @@ FOCALBOARD_FILESS3CONFIG_SSL=true
 ```
 
 **Option C: Cloudflare R2 (S3-compatible, cheaper)**
-1. Create Cloudflare R2 bucket
-2. Create R2 API token:
-   - Go to Cloudflare Dashboard → R2 → Manage R2 API tokens
-   - Click "Create API token"
-   - Select "Custom token" with R2 read/write permissions
-   - Copy the Access Key ID and Secret Access Key
-3. Add these environment variables:
+1. **Create R2 bucket**:
+   - Go to Cloudflare Dashboard → R2 Object Storage
+   - Click "Create bucket"
+   - Choose bucket name and location
+2. **Create R2 API token**:
+   - Go to Cloudflare Dashboard → Account Home → R2
+   - Under **API** dropdown, select "Manage API tokens"
+   - Choose "Create User API token" (or "Create Account API token" for account-wide access)
+   - Under **Permissions**: Select "Object Read & Write"
+   - (Optional) Scope token to specific bucket if desired
+   - Click "Create User API token"
+   - **Important**: Copy both the **Access Key ID** and **Secret Access Key** immediately (Secret Access Key is only shown once)
+   - Note your **Account ID** from the R2 dashboard
+3. **Add these environment variables**:
 ```
 FOCALBOARD_FILESDRIVER=s3
 FOCALBOARD_FILESS3CONFIG_BUCKET=your-bucket-name
 FOCALBOARD_FILESS3CONFIG_REGION=auto
-FOCALBOARD_FILESS3CONFIG_ACCESSKEYID=your-r2-access-key
-FOCALBOARD_FILESS3CONFIG_SECRETACCESSKEY=your-r2-secret-key
+FOCALBOARD_FILESS3CONFIG_ACCESSKEYID=your-access-key-id
+FOCALBOARD_FILESS3CONFIG_SECRETACCESSKEY=your-secret-access-key
 FOCALBOARD_FILESS3CONFIG_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
 FOCALBOARD_FILESS3CONFIG_SSL=true
 ```
+Replace:
+- `your-bucket-name`: Your R2 bucket name
+- `your-access-key-id`: Access Key ID from step 2
+- `your-secret-access-key`: Secret Access Key from step 2  
+- `your-account-id`: Your Cloudflare Account ID
 
 ### 4. Environment Variables
 

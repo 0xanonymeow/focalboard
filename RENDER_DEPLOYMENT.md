@@ -32,8 +32,11 @@ Simple guide to deploy Focalboard on Render.com using the free tier.
 5. Region: Choose closest to you
 6. Plan: Free (500MB database, 50MB file storage)
 7. Click "Create new project"
-8. Go to Settings → Database
-9. **Copy the Connection String** (format: `postgresql://postgres:[YOUR-PASSWORD]@db.xxxxx.supabase.co:5432/postgres`)
+8. **Get the Pooler Connection String**:
+   - Follow Supabase's guide: https://supabase.com/docs/guides/database/connecting-to-postgres#supavisor-session-mode
+   - Use the **Session Mode** connection string (contains `pooler.supabase.com`)
+   - Format: `postgresql://postgres.[PROJECT_ID]:[YOUR_PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres`
+   - **Important**: Use the pooler format to avoid IPv6 connection issues on Render
 
 ### 2. Create Web Service
 
@@ -154,3 +157,5 @@ FOCALBOARD_ENABLEPUBLICSHAREDBOARDS=false
 - Check build logs if deployment fails
 - Verify DATABASE_URL is correctly set
 - Ensure FOCALBOARD_SERVERROOT matches your actual URL
+- **IPv6 connection errors**: Use Supabase's pooler connection string (e.g., `aws-0-region.pooler.supabase.com`) instead of the direct database connection
+- **".env file not found" warning**: This is normal in production - the app will use environment variables

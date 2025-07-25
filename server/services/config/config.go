@@ -2,6 +2,8 @@ package config
 
 import (
 	"log"
+	"os"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -129,6 +131,196 @@ func ReadConfigFile(configFilePath string) (*Configuration, error) {
 	return &configuration, nil
 }
 
+// setDefaults sets all default configuration values using mapstructure keys
+func setDefaults() {
+	viper.SetDefault("serverRoot", DefaultServerRoot)
+	viper.SetDefault("port", DefaultPort)
+	viper.SetDefault("dbtype", "sqlite3")
+	viper.SetDefault("dbconfig", "./focalboard.db")
+	viper.SetDefault("dbpingattempts", DBPingAttempts)
+	viper.SetDefault("dbtableprefix", "")
+	viper.SetDefault("useSSL", false)
+	viper.SetDefault("secureCookie", false)
+	viper.SetDefault("webpath", "./pack")
+	viper.SetDefault("filesdriver", "local")
+	viper.SetDefault("filespath", "./files")
+	viper.SetDefault("maxfilesize", int64(0))
+	viper.SetDefault("telemetry", true)
+	viper.SetDefault("telemetryid", "")
+	viper.SetDefault("prometheusaddress", "")
+	viper.SetDefault("webhook_update", []string{})
+	viper.SetDefault("secret", "")
+	viper.SetDefault("session_expire_time", int64(60*60*24*30)) // 30 days session lifetime
+	viper.SetDefault("session_refresh_time", int64(60*60*5))    // 5 minutes session refresh
+	viper.SetDefault("localonly", false)
+	viper.SetDefault("enableLocalMode", false)
+	viper.SetDefault("localModeSocketLocation", "/var/tmp/focalboard_local.socket")
+	viper.SetDefault("enablePublicSharedBoards", false)
+	viper.SetDefault("featureFlags", map[string]string{})
+	viper.SetDefault("enable_data_retention", false)
+	viper.SetDefault("data_retention_days", 365) // 1 year is default
+	viper.SetDefault("teammateNameDisplay", "username")
+	viper.SetDefault("showEmailAddress", false)
+	viper.SetDefault("showFullName", false)
+	viper.SetDefault("authMode", "native")
+	viper.SetDefault("logging_cfg_file", "")
+	viper.SetDefault("logging_cfg_json", "")
+	viper.SetDefault("audit_cfg_file", "")
+	viper.SetDefault("audit_cfg_json", "")
+	viper.SetDefault("notify_freq_card_seconds", 120)    // 2 minutes after last card edit
+	viper.SetDefault("notify_freq_board_seconds", 86400) // 1 day after last card edit
+}
+
+// bindEnvironmentVariables binds all configuration keys to environment variables using mapstructure keys
+func bindEnvironmentVariables() {
+	// Main configuration fields (using mapstructure keys)
+	viper.BindEnv("serverRoot", "FOCALBOARD_SERVERROOT")
+	viper.BindEnv("port", "FOCALBOARD_PORT")
+	viper.BindEnv("dbtype", "FOCALBOARD_DBTYPE")
+	viper.BindEnv("dbconfig", "FOCALBOARD_DBCONFIG")
+	viper.BindEnv("dbpingattempts", "FOCALBOARD_DBPINGATTEMPTS")
+	viper.BindEnv("dbtableprefix", "FOCALBOARD_DBTABLEPREFIX")
+	viper.BindEnv("useSSL", "FOCALBOARD_USESSL")
+	viper.BindEnv("secureCookie", "FOCALBOARD_SECURECOOKIE")
+	viper.BindEnv("webpath", "FOCALBOARD_WEBPATH")
+	viper.BindEnv("filesdriver", "FOCALBOARD_FILESDRIVER")
+	viper.BindEnv("filespath", "FOCALBOARD_FILESPATH")
+	viper.BindEnv("maxfilesize", "FOCALBOARD_MAXFILESIZE")
+	viper.BindEnv("telemetry", "FOCALBOARD_TELEMETRY")
+	viper.BindEnv("telemetryid", "FOCALBOARD_TELEMETRYID")
+	viper.BindEnv("prometheusaddress", "FOCALBOARD_PROMETHEUSADDRESS")
+	viper.BindEnv("secret", "FOCALBOARD_SECRET")
+	viper.BindEnv("session_expire_time", "FOCALBOARD_SESSIONEXPIRETIME")
+	viper.BindEnv("session_refresh_time", "FOCALBOARD_SESSIONREFRESHTIME")
+	viper.BindEnv("localonly", "FOCALBOARD_LOCALONLY")
+	viper.BindEnv("enableLocalMode", "FOCALBOARD_ENABLELOCALMODE")
+	viper.BindEnv("localModeSocketLocation", "FOCALBOARD_LOCALMODESOCKETLOCATION")
+	viper.BindEnv("enablePublicSharedBoards", "FOCALBOARD_ENABLEPUBLICSHAREDBOARDS")
+	viper.BindEnv("enable_data_retention", "FOCALBOARD_ENABLEDATARETENTION")
+	viper.BindEnv("data_retention_days", "FOCALBOARD_DATARETENTIONDAYS")
+	viper.BindEnv("teammateNameDisplay", "FOCALBOARD_TEAMMATENAMEDISPLAY")
+	viper.BindEnv("showEmailAddress", "FOCALBOARD_SHOWEMAILADDRESS")
+	viper.BindEnv("showFullName", "FOCALBOARD_SHOWFULLNAME")
+	viper.BindEnv("authMode", "FOCALBOARD_AUTHMODE")
+	viper.BindEnv("logging_cfg_file", "FOCALBOARD_LOGGINGCFGFILE")
+	viper.BindEnv("logging_cfg_json", "FOCALBOARD_LOGGINGCFGJSON")
+	viper.BindEnv("audit_cfg_file", "FOCALBOARD_AUDITCFGFILE")
+	viper.BindEnv("audit_cfg_json", "FOCALBOARD_AUDITCFGJSON")
+	viper.BindEnv("notify_freq_card_seconds", "FOCALBOARD_NOTIFYFREQCARDSECONDS")
+	viper.BindEnv("notify_freq_board_seconds", "FOCALBOARD_NOTIFYFREQBOARDSECONDS")
+
+	// S3 Configuration fields (using mapstructure keys)
+	viper.BindEnv("filess3config.accesskeyid", "FOCALBOARD_FILESS3CONFIG_ACCESSKEYID")
+	viper.BindEnv("filess3config.secretaccesskey", "FOCALBOARD_FILESS3CONFIG_SECRETACCESSKEY")
+	viper.BindEnv("filess3config.bucket", "FOCALBOARD_FILESS3CONFIG_BUCKET")
+	viper.BindEnv("filess3config.pathprefix", "FOCALBOARD_FILESS3CONFIG_PATHPREFIX")
+	viper.BindEnv("filess3config.region", "FOCALBOARD_FILESS3CONFIG_REGION")
+	viper.BindEnv("filess3config.endpoint", "FOCALBOARD_FILESS3CONFIG_ENDPOINT")
+	viper.BindEnv("filess3config.ssl", "FOCALBOARD_FILESS3CONFIG_SSL")
+	viper.BindEnv("filess3config.signv2", "FOCALBOARD_FILESS3CONFIG_SIGNV2")
+	viper.BindEnv("filess3config.sse", "FOCALBOARD_FILESS3CONFIG_SSE")
+	viper.BindEnv("filess3config.trace", "FOCALBOARD_FILESS3CONFIG_TRACE")
+	viper.BindEnv("filess3config.timeout", "FOCALBOARD_FILESS3CONFIG_TIMEOUT")
+}
+
+// applyEnvironmentOverridesPre applies environment variable overrides before viper unmarshaling
+func applyEnvironmentOverridesPre() {
+	// Handle FeatureFlags map - set in viper before unmarshaling
+	if featureFlags := os.Getenv("FOCALBOARD_FEATUREFLAGS"); featureFlags != "" {
+		if featureFlags == "null" || featureFlags == "" {
+			viper.Set("featureFlags", map[string]string{})
+		} else {
+			viper.Set("featureFlags", parseFeatureFlags(featureFlags))
+		}
+	}
+
+	// Handle WebhookUpdate array - set in viper before unmarshaling
+	if webhooks := os.Getenv("FOCALBOARD_WEBHOOKUPDATE"); webhooks != "" {
+		if webhooks == "null" || webhooks == "" {
+			viper.Set("webhook_update", []string{})
+		} else {
+			webhookList := strings.Split(webhooks, ",")
+			// Trim whitespace from each webhook URL
+			for i, webhook := range webhookList {
+				webhookList[i] = strings.TrimSpace(webhook)
+			}
+			viper.Set("webhook_update", webhookList)
+		}
+	}
+}
+
+// applyEnvironmentOverridesPost applies environment variable overrides after viper unmarshaling
+func applyEnvironmentOverridesPost(config *Configuration) {
+	// Handle DATABASE_URL (common in cloud deployments like Render)
+	if databaseURL := os.Getenv("DATABASE_URL"); databaseURL != "" {
+		config.DBConfigString = databaseURL
+		// Auto-detect database type from URL
+		if strings.HasPrefix(databaseURL, "postgres://") || strings.HasPrefix(databaseURL, "postgresql://") {
+			config.DBType = "postgres"
+		} else if strings.HasPrefix(databaseURL, "mysql://") {
+			config.DBType = "mysql"
+		}
+	}
+
+	// Sanitize S3 endpoint to conform with Mattermost filestore expectations
+	if config.FilesDriver == "amazons3" && config.FilesS3Config.Endpoint != "" {
+		config.FilesS3Config.Endpoint = sanitizeS3Endpoint(config.FilesS3Config.Endpoint)
+	}
+
+	// Note: Other FOCALBOARD_ environment variables are now handled automatically by Viper
+	// since we set up environment variable support AFTER reading the config file
+}
+
+// sanitizeS3Endpoint removes protocol and paths from S3 endpoint URL to conform with Mattermost filestore expectations
+// Mattermost expects endpoint format: "hostname" or "hostname:port" (no protocol, no paths)
+// Examples:
+// - "https://account.r2.cloudflarestorage.com" -> "account.r2.cloudflarestorage.com"
+// - "http://localhost:9000/path" -> "localhost:9000"
+func sanitizeS3Endpoint(endpoint string) string {
+	if endpoint == "" {
+		return endpoint
+	}
+
+	// Remove protocol (http:// or https://)
+	endpoint = strings.TrimPrefix(endpoint, "https://")
+	endpoint = strings.TrimPrefix(endpoint, "http://")
+
+	// Remove any path components (everything after the first '/')
+	if slashIndex := strings.Index(endpoint, "/"); slashIndex != -1 {
+		endpoint = endpoint[:slashIndex]
+	}
+
+	// Remove trailing colon if present (but preserve port numbers)
+	endpoint = strings.TrimSuffix(endpoint, ":")
+
+	return endpoint
+}
+
+// parseFeatureFlags parses feature flags from environment variable format
+// Expected format: "flag1:value1,flag2:value2"
+func parseFeatureFlags(featureFlagsStr string) map[string]string {
+	flags := make(map[string]string)
+	pairs := strings.Split(featureFlagsStr, ",")
+	
+	for _, pair := range pairs {
+		pair = strings.TrimSpace(pair)
+		if pair == "" {
+			continue
+		}
+		
+		parts := strings.SplitN(pair, ":", 2)
+		if len(parts) == 2 {
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+			flags[key] = value
+		} else {
+			// If no colon, treat as boolean flag set to "true"
+			flags[pair] = "true"
+		}
+	}
+	
+	return flags
+}
 func removeSecurityData(config Configuration) Configuration {
 	clean := config
 	return clean

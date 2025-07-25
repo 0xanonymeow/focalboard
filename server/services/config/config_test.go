@@ -120,7 +120,7 @@ func TestEnvironmentVariableOverrides(t *testing.T) {
 		cleanupViper()
 		
 		os.Setenv("FOCALBOARD_FILESDRIVER", "amazons3")
-		os.Setenv("FOCALBOARD_FILESS3CONFIG_ENDPOINT", "https://account.r2.cloudflarestorage.com")
+		os.Setenv("FOCALBOARD_FILESS3CONFIG_ENDPOINT", "https://abc123def456789012345678901234567890.r2.cloudflarestorage.com")
 		defer func() {
 			os.Unsetenv("FOCALBOARD_FILESDRIVER")
 			os.Unsetenv("FOCALBOARD_FILESS3CONFIG_ENDPOINT")
@@ -131,7 +131,7 @@ func TestEnvironmentVariableOverrides(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, "amazons3", config.FilesDriver)
-		assert.Equal(t, "account.r2.cloudflarestorage.com", config.FilesS3Config.Endpoint)
+		assert.Equal(t, "abc123def456789012345678901234567890.r2.cloudflarestorage.com", config.FilesS3Config.Endpoint)
 	})
 }
 
@@ -196,9 +196,9 @@ func TestSanitizeS3Endpoint(t *testing.T) {
 		expected string
 	}{
 		{
-			name:     "HTTPS URL with domain",
-			input:    "https://account.r2.cloudflarestorage.com",
-			expected: "account.r2.cloudflarestorage.com",
+			name:     "HTTPS URL with Cloudflare R2",
+			input:    "https://abc123def456789012345678901234567890.r2.cloudflarestorage.com",
+			expected: "abc123def456789012345678901234567890.r2.cloudflarestorage.com",
 		},
 		{
 			name:     "HTTP URL with localhost and port",

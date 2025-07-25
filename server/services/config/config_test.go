@@ -257,4 +257,5 @@ func TestDefaults(t *testing.T) {
 	assert.Equal(t, "./pack", config.WebPath)
 	assert.Equal(t, false, config.EnablePublicSharedBoards)
 	assert.Equal(t, "native", config.AuthMode)
+	assert.Equal(t, int64(300000), config.FilesS3Config.Timeout)
 }

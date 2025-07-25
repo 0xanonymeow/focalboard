@@ -161,6 +161,9 @@ func setDefaults() {
 	viper.SetDefault("audit_cfg_json", "")
 	viper.SetDefault("notify_freq_card_seconds", 120)    // 2 minutes after last card edit
 	viper.SetDefault("notify_freq_board_seconds", 86400) // 1 day after last card edit
+	
+	// S3 configuration defaults
+	viper.SetDefault("filess3config.timeout", int64(300000)) // 300 seconds timeout for S3 operations
 }
 
 // bindEnvironmentVariables binds all configuration keys to environment variables using mapstructure keys

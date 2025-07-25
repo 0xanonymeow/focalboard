@@ -90,7 +90,8 @@ func (a *App) ImportArchive(r io.Reader, opt model.ImportArchiveOptions) error {
 				)
 				continue
 			}
-			newFileName, err := a.SaveFile(zr, opt.TeamID, board.ID, filename, board.IsTemplate)
+			// Use streaming version for memory efficiency
+			newFileName, err := a.SaveFileStreaming(zr, opt.TeamID, board.ID, filename, board.IsTemplate)
 			if err != nil {
 				return fmt.Errorf("cannot import file %s for board %s: %w", filename, dir, err)
 			}

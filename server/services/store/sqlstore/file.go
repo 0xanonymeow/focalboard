@@ -62,7 +62,7 @@ func (s *SQLStore) getFileInfo(db sq.BaseRunner, id string) (*mmModel.FileInfo, 
 			"path",
 		).
 		From(s.tablePrefix + "file_info").
-		Where(sq.Eq{"Id": id})
+		Where(sq.Eq{"id": id})
 
 	row := query.QueryRow()
 

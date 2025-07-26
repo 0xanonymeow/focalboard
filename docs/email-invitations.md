@@ -24,8 +24,7 @@ FOCALBOARD_EMAIL_SMTP_TLS=true
 
 # Required email settings
 FOCALBOARD_EMAIL_FROM_EMAIL=noreply@your-domain.com
-FOCALBOARD_EMAIL_FROM_NAME=Focalboard
-FOCALBOARD_EMAIL_INVITE_SUBJECT=You've been invited to join a board
+FOCALBOARD_EMAIL_FROM_NAME=Your Organization
 ```
 
 ### Using Postmark
@@ -38,8 +37,7 @@ FOCALBOARD_EMAIL_POSTMARK_API_TOKEN=your-postmark-server-token
 
 # Required email settings
 FOCALBOARD_EMAIL_FROM_EMAIL=noreply@your-domain.com
-FOCALBOARD_EMAIL_FROM_NAME=Focalboard
-FOCALBOARD_EMAIL_INVITE_SUBJECT=You've been invited to join a board
+FOCALBOARD_EMAIL_FROM_NAME=Your Organization
 ```
 
 ### Configuration File
@@ -131,6 +129,22 @@ curl -X POST \
 1. Ensure the sender has `ManageBoardRoles` permission on the board
 2. Check that `enablePublicSharedBoards` is set to `true`
 3. Verify the board allows the specified role for invitations
+
+## Email Templates
+
+Email invitations use customizable templates located in `./templates/email/`:
+
+- `invitation.html` - HTML email template  
+- `invitation.txt` - Plain text email template
+- `invitation_subject.txt` - Email subject template
+
+Templates support the following variables:
+- `{{.InviterName}}` - Name of the person sending invitation
+- `{{.BoardTitle}}` - Name of the board  
+- `{{.InviteURL}}` - Secure invitation acceptance link
+- `{{.FromName}}` - Configured sender name
+
+If templates are not found, the system uses built-in defaults.
 
 ## Security Considerations
 

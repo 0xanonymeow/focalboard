@@ -113,6 +113,67 @@ class OctoClient {
         return json
     }
 
+    async ping(): Promise<{sku: string} | null> {
+        const path = '/ping'
+        const response = await fetch(this.getBaseURL() + path, {
+            method: 'GET',
+            headers: this.headers(),
+        })
+        if (response.status !== 200) {
+            return null
+        }
+
+        const json = (await this.getJson(response, {})) as {sku: string}
+        return json
+    }
+
+    async checkSingleUserMode(): Promise<boolean> {
+        const pingResponse = await this.ping()
+        return pingResponse?.sku === 'personal_desktop'
+    }
+
+    async autoLoginSingleUser(): Promise<boolean> {
+        const isSingleUser = await this.checkSingleUserMode()
+        if (!isSingleUser || this.token) {
+            return false
+        }
+
+        // Check if token is provided via URL parameter
+        const urlParams = new URLSearchParams(window.location.search)
+        const urlToken = urlParams.get('token')
+        
+        // Try tokens in order of preference:
+        // 1. URL parameter
+        // 2. localStorage fallback (from previous successful login)
+        // 3. Common defaults (most common first)
+        const tokensToTry = [
+            urlToken,
+            localStorage.getItem('focalboardSingleUserToken'),
+            'test', // Most common default from env
+            'focalboard-single-user',
+            'focalboard',
+            'single-user',
+        ].filter(Boolean) as string[]
+        
+        for (const testToken of tokensToTry) {
+            this.token = testToken
+            try {
+                const me = await this.getMe()
+                if (me && me.id === 'single-user') {
+                    // Store successful token for future use
+                    localStorage.setItem('focalboardSingleUserToken', testToken)
+                    return true
+                }
+            } catch (e) {
+                // Token didn't work, continue trying
+            }
+        }
+
+        // Clear failed token attempt
+        this.token = ''
+        return false
+    }
+
     async register(email: string, username: string, password: string, token?: string): Promise<{code: number, json: {error?: string}}> {
         const path = '/api/v2/register'
         const body = JSON.stringify({email, username, password, token})

@@ -18,6 +18,7 @@ import {getLanguage, fetchLanguage} from './store/language'
 import {useAppSelector, useAppDispatch} from './store/hooks'
 import {fetchClientConfig} from './store/clientConfig'
 import FocalboardRouter from './router'
+import octoClient from './octoClient'
 
 import {IUser} from './user'
 
@@ -31,9 +32,16 @@ const App = (props: Props): JSX.Element => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(fetchLanguage())
-        dispatch(fetchMe())
-        dispatch(fetchClientConfig())
+        const initializeApp = async () => {
+            // Try to auto-login for single-user mode before fetching user info
+            await octoClient.autoLoginSingleUser()
+            
+            dispatch(fetchLanguage())
+            dispatch(fetchMe())
+            dispatch(fetchClientConfig())
+        }
+        
+        initializeApp()
     }, [])
 
     useEffect(() => {

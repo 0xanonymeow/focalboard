@@ -30,6 +30,7 @@ const LoginPage = () => {
             const invitationToken = localStorage.getItem('invitation_token')
             if (invitationToken) {
                 localStorage.removeItem('invitation_token')
+                localStorage.removeItem('invitation_email')
                 history.push(`/invite/${invitationToken}`)
                 return
             }

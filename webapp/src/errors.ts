@@ -10,6 +10,7 @@ enum ErrorId {
     NotLoggedIn = 'not-logged-in',
     InvalidReadOnlyBoard = 'invalid-read-only-board',
     BoardNotFound = 'board-not-found',
+    NetworkError = 'network-error',
 }
 
 type ErrorDef = {

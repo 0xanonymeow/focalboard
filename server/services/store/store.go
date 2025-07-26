@@ -161,6 +161,7 @@ type Store interface {
 
 	// Board Invitations
 	CreateBoardInvitation(invitation *model.BoardInvitation) error
+	GetBoardInvitationByID(invitationID string) (*model.BoardInvitation, error)
 	GetBoardInvitationByToken(token string) (*model.BoardInvitation, error)
 	GetBoardInvitationsForBoard(boardID string) ([]*model.BoardInvitation, error)
 	UpdateBoardInvitation(invitation *model.BoardInvitation) error

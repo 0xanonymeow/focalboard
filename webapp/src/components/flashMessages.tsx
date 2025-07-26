@@ -8,12 +8,17 @@ import './flashMessages.scss'
 export type FlashMessage = {
     content: React.ReactNode
     severity: 'low' | 'normal' | 'high'
+    persistent?: boolean
 }
 
 const emitter = createNanoEvents()
 
 export function sendFlashMessage(message: FlashMessage): void {
     emitter.emit('message', message)
+}
+
+export function clearFlashMessages(): void {
+    emitter.emit('clear')
 }
 
 type Props = {
@@ -27,18 +32,35 @@ export const FlashMessages = React.memo((props: Props) => {
 
     useEffect(() => {
         let isSubscribed = true
-        emitter.on('message', (newMessage: FlashMessage) => {
+        const unsubscribeMessage = emitter.on('message', (newMessage: FlashMessage) => {
             if (isSubscribed) {
                 if (timeoutId) {
                     clearTimeout(timeoutId)
                     setTimeoutId(null)
                 }
-                setTimeoutId(setTimeout(handleFadeOut, props.milliseconds - 200))
+                
+                // Only set timeout for non-persistent messages
+                if (!newMessage.persistent) {
+                    setTimeoutId(setTimeout(handleFadeOut, props.milliseconds - 200))
+                }
                 setMessage(newMessage)
             }
         })
+        
+        const unsubscribeClear = emitter.on('clear', () => {
+            if (isSubscribed) {
+                if (timeoutId) {
+                    clearTimeout(timeoutId)
+                    setTimeoutId(null)
+                }
+                handleFadeOut()
+            }
+        })
+        
         return () => {
             isSubscribed = false
+            unsubscribeMessage()
+            unsubscribeClear()
         }
     }, [])
 
@@ -53,6 +75,11 @@ export const FlashMessages = React.memo((props: Props) => {
     }
 
     const handleClick = (): void => {
+        // Don't allow clicking to dismiss persistent messages
+        if (message?.persistent) {
+            return
+        }
+        
         if (timeoutId) {
             clearTimeout(timeoutId)
             setTimeoutId(null)
@@ -66,7 +93,7 @@ export const FlashMessages = React.memo((props: Props) => {
 
     return (
         <div
-            className={'FlashMessages ' + message.severity + (fadeOut ? ' flashOut' : ' flashIn')}
+            className={'FlashMessages ' + message.severity + (fadeOut ? ' flashOut' : ' flashIn') + (message.persistent ? ' persistent' : '')}
             onClick={handleClick}
         >
             {message.content}

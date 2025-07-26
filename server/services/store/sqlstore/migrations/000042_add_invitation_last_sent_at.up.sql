@@ -1,0 +1,1 @@
+ALTER TABLE {{.prefix}}board_invitations ADD COLUMN last_sent_at BIGINT;

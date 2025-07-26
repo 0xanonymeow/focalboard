@@ -17,10 +17,28 @@ const globalErrorSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(initialReadOnlyLoad.rejected, (state, action) => {
-            state.value = action.error.message || ''
+            // Check if it's a network error or connection issue
+            if (action.error.name === 'TypeError' || 
+                action.error.message?.includes('fetch') ||
+                action.error.message?.includes('Network') ||
+                action.error.message?.includes('connection') ||
+                !action.error.message) {
+                state.value = 'network-error'
+            } else {
+                state.value = action.error.message || 'network-error'
+            }
         })
         builder.addCase(initialLoad.rejected, (state, action) => {
-            state.value = action.error.message || ''
+            // Check if it's a network error or connection issue
+            if (action.error.name === 'TypeError' || 
+                action.error.message?.includes('fetch') ||
+                action.error.message?.includes('Network') ||
+                action.error.message?.includes('connection') ||
+                !action.error.message) {
+                state.value = 'network-error'
+            } else {
+                state.value = action.error.message || 'network-error'
+            }
         })
     },
 })

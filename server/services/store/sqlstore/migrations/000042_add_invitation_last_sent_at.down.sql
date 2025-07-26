@@ -1,0 +1,1 @@
+ALTER TABLE {{.prefix}}board_invitations DROP COLUMN last_sent_at;

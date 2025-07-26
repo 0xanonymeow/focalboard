@@ -13,7 +13,11 @@ import {useAppSelector} from '../../store/hooks'
 
 import './emailInvite.scss'
 
-const EmailInvite = () => {
+interface Props {
+    onInvitationSent?: () => void
+}
+
+const EmailInvite = ({onInvitationSent}: Props) => {
     const intl = useIntl()
     const board = useAppSelector(getCurrentBoard)
     const [email, setEmail] = useState('')
@@ -51,17 +55,38 @@ const EmailInvite = () => {
         setIsLoading(true)
 
         try {
+            // Check if email is already invited
+            const existingInvitations = await client.getBoardInvitations(board.id)
+            const existingInvitation = existingInvitations.find(inv => 
+                inv.email.toLowerCase() === email.toLowerCase() && 
+                !inv.usedAt && 
+                new Date(inv.expiresAt * 1000) > new Date()
+            )
+
+            if (existingInvitation) {
+                sendFlashMessage({
+                    content: intl.formatMessage({
+                        id: 'ShareBoard.emailInvite.alreadyInvited',
+                        defaultMessage: 'This email address has already been invited',
+                    }),
+                    severity: 'high',
+                })
+                setIsLoading(false)
+                return
+            }
+
             const success = await client.sendBoardInvitation(board.id, email, role)
             
             if (success) {
                 sendFlashMessage({
                     content: intl.formatMessage({
                         id: 'ShareBoard.emailInvite.success',
-                        defaultMessage: 'Invitation sent successfully',
+                        defaultMessage: '✅ Invitation sent successfully!',
                     }),
-                    severity: 'low',
+                    severity: 'normal',
                 })
                 setEmail('')
+                onInvitationSent?.()
             } else {
                 sendFlashMessage({
                     content: intl.formatMessage({
@@ -172,13 +197,6 @@ const EmailInvite = () => {
                         )}
                     </Button>
                 </div>
-            </div>
-            
-            <div className='EmailInvite__description'>
-                <FormattedMessage
-                    id='ShareBoard.emailInvite.description'
-                    defaultMessage='Send an email invitation to collaborate on this board'
-                />
             </div>
         </div>
     )

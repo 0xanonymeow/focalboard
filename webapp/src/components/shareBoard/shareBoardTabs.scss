@@ -1,0 +1,52 @@
+.share-board-tabs {
+    .share-board-tabs-header {
+        display: flex;
+        border-bottom: 1px solid rgb(var(--center-channel-color-rgb), 0.08);
+        margin-bottom: 20px;
+        
+        .share-board-tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgb(var(--center-channel-color-rgb), 0.64);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+            
+            &:hover {
+                color: rgb(var(--center-channel-color-rgb), 0.8);
+                background: rgb(var(--center-channel-color-rgb), 0.04);
+            }
+            
+            &.active {
+                color: rgb(var(--button-bg-rgb));
+                border-bottom-color: rgb(var(--button-bg-rgb));
+                background: rgb(var(--button-bg-rgb), 0.04);
+            }
+            
+            .CompassIcon {
+                font-size: 18px;
+            }
+            
+            span {
+                font-weight: 600;
+            }
+        }
+    }
+    
+    .share-board-tabs-content {
+        
+        .invite-tab-content {
+            .pending-invitations {
+                margin-top: 16px;
+            }
+        }
+    }
+}

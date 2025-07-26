@@ -54,9 +54,19 @@ func (a *App) UpdateBoardInvitation(invitation *model.BoardInvitation) error {
 	return a.store.UpdateBoardInvitation(invitation)
 }
 
-// GetBoardInvitationsForBoard retrieves all invitations for a board
+// GetBoardInvitations retrieves all invitations for a board
+func (a *App) GetBoardInvitations(boardID string) ([]*model.BoardInvitation, error) {
+	return a.store.GetBoardInvitationsForBoard(boardID)
+}
+
+// GetBoardInvitationsForBoard retrieves all invitations for a board (alias for compatibility)
 func (a *App) GetBoardInvitationsForBoard(boardID string) ([]*model.BoardInvitation, error) {
 	return a.store.GetBoardInvitationsForBoard(boardID)
+}
+
+// GetBoardInvitationByID retrieves a board invitation by ID
+func (a *App) GetBoardInvitationByID(invitationID string) (*model.BoardInvitation, error) {
+	return a.store.GetBoardInvitationByID(invitationID)
 }
 
 // DeleteBoardInvitation deletes a board invitation

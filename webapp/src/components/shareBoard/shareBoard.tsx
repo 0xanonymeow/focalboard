@@ -1,7 +1,7 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 
 import {useIntl, FormattedMessage} from 'react-intl'
 import {generatePath, useRouteMatch} from 'react-router-dom'
@@ -47,7 +47,7 @@ import {useHasPermissions} from '../../hooks/permissions'
 
 import TeamPermissionsRow from './teamPermissionsRow'
 import UserPermissionsRow from './userPermissionsRow'
-import EmailInvite from './emailInvite'
+import ShareBoardTabs from './shareBoardTabs'
 
 import './shareBoard.scss'
 
@@ -339,6 +339,8 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
                         onClose: () => setShowLinkChannelConfirmation(null),
                     }}
                 />}
+            
+            <ShareBoardTabs>
             <BoardPermissionGate permissions={[Permission.ManageBoardRoles]}>
                 <div className='share-input__container'>
                     <div className='share-input'>
@@ -383,11 +385,7 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
                     </div>
                 </div>
             </BoardPermissionGate>
-            
-            <BoardPermissionGate permissions={[Permission.ManageBoardRoles]}>
-                <EmailInvite/>
-            </BoardPermissionGate>
-            
+
             <div className='user-items'>
                 <TeamPermissionsRow/>
 
@@ -566,6 +564,7 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
                     </div>
                 </div>
             )}
+            </ShareBoardTabs>
         </Dialog>
     )
 }

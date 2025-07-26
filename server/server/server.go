@@ -20,6 +20,7 @@ import (
 	appModel "github.com/mattermost/focalboard/server/model"
 	"github.com/mattermost/focalboard/server/services/audit"
 	"github.com/mattermost/focalboard/server/services/config"
+	"github.com/mattermost/focalboard/server/services/email"
 	"github.com/mattermost/focalboard/server/services/metrics"
 	"github.com/mattermost/focalboard/server/services/notify"
 	"github.com/mattermost/focalboard/server/services/notify/notifylogger"
@@ -129,6 +130,13 @@ func New(params Params) (*Server, error) {
 		return nil, fmt.Errorf("cannot initialize notification service(s): %w", errNotify)
 	}
 
+	// Init email service
+	emailService, errEmail := email.New(params.Cfg, params.Logger)
+	if errEmail != nil {
+		params.Logger.Warn("Unable to initialize email service", mlog.Err(errEmail))
+		// Continue without email service - it's not critical for basic functionality
+	}
+
 	appServices := app.Services{
 		Auth:             authenticator,
 		Store:            params.DBStore,
@@ -136,6 +144,7 @@ func New(params Params) (*Server, error) {
 		Webhook:          webhookClient,
 		Metrics:          metricsService,
 		Notifications:    notificationService,
+		Email:            emailService,
 		Logger:           params.Logger,
 		Permissions:      params.PermissionsService,
 		ServicesAPI:      params.ServicesAPI,

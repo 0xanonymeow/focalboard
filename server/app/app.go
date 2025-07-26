@@ -7,6 +7,7 @@ import (
 
 	"github.com/mattermost/focalboard/server/auth"
 	"github.com/mattermost/focalboard/server/services/config"
+	"github.com/mattermost/focalboard/server/services/email"
 	"github.com/mattermost/focalboard/server/services/metrics"
 	"github.com/mattermost/focalboard/server/services/notify"
 	"github.com/mattermost/focalboard/server/services/permissions"
@@ -48,6 +49,7 @@ type Services struct {
 	Webhook          *webhook.Client
 	Metrics          *metrics.Metrics
 	Notifications    *notify.Service
+	Email            *email.Service
 	Logger           mlog.LoggerIFace
 	Permissions      permissions.PermissionsService
 	SkipTemplateInit bool
@@ -63,6 +65,7 @@ type App struct {
 	webhook             *webhook.Client
 	metrics             *metrics.Metrics
 	notifications       *notify.Service
+	email               *email.Service
 	logger              mlog.LoggerIFace
 	permissions         permissions.PermissionsService
 	blockChangeNotifier *utils.CallbackQueue
@@ -90,6 +93,7 @@ func New(config *config.Configuration, wsAdapter ws.Adapter, services Services) 
 		webhook:             services.Webhook,
 		metrics:             services.Metrics,
 		notifications:       services.Notifications,
+		email:               services.Email,
 		logger:              services.Logger,
 		permissions:         services.Permissions,
 		blockChangeNotifier: utils.NewCallbackQueue("blockChangeNotifier", blockChangeNotifierQueueSize, blockChangeNotifierPoolSize, services.Logger),

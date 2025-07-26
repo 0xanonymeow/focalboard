@@ -29,6 +29,21 @@ type AmazonS3Config struct {
 	Timeout         int64
 }
 
+type EmailConfig struct {
+	SMTPServer   string `json:"smtpServer" mapstructure:"smtpServer"`
+	SMTPPort     int    `json:"smtpPort" mapstructure:"smtpPort"`
+	SMTPUsername string `json:"smtpUsername" mapstructure:"smtpUsername"`
+	SMTPPassword string `json:"smtpPassword" mapstructure:"smtpPassword"`
+	SMTPTls      bool   `json:"smtpTls" mapstructure:"smtpTls"`
+	
+	PostmarkAPIToken string `json:"postmarkApiToken" mapstructure:"postmarkApiToken"`
+	
+	FromEmail string `json:"fromEmail" mapstructure:"fromEmail"`
+	FromName  string `json:"fromName" mapstructure:"fromName"`
+	
+	TemplatesPath string `json:"templatesPath" mapstructure:"templatesPath"`
+}
+
 // Configuration is the app configuration stored in a json file.
 type Configuration struct {
 	ServerRoot               string            `json:"serverRoot" mapstructure:"serverRoot"`
@@ -43,6 +58,7 @@ type Configuration struct {
 	FilesDriver              string            `json:"filesdriver" mapstructure:"filesdriver"`
 	FilesS3Config            AmazonS3Config    `json:"filess3config" mapstructure:"filess3config"`
 	FilesPath                string            `json:"filespath" mapstructure:"filespath"`
+	EmailConfig              EmailConfig       `json:"emailConfig" mapstructure:"emailConfig"`
 	MaxFileSize              int64             `json:"maxfilesize" mapstructure:"maxfilesize"`
 	Telemetry                bool              `json:"telemetry" mapstructure:"telemetry"`
 	TelemetryID              string            `json:"telemetryid" mapstructure:"telemetryid"`
@@ -164,6 +180,17 @@ func setDefaults() {
 	
 	// S3 configuration defaults
 	viper.SetDefault("filess3config.timeout", int64(300000)) // 300 seconds timeout for S3 operations
+	
+	// Email configuration defaults
+	viper.SetDefault("emailConfig.smtpServer", "")
+	viper.SetDefault("emailConfig.smtpPort", 587)
+	viper.SetDefault("emailConfig.smtpUsername", "")
+	viper.SetDefault("emailConfig.smtpPassword", "")
+	viper.SetDefault("emailConfig.smtpTls", true)
+	viper.SetDefault("emailConfig.postmarkApiToken", "")
+	viper.SetDefault("emailConfig.fromEmail", "")
+	viper.SetDefault("emailConfig.fromName", "")
+	viper.SetDefault("emailConfig.templatesPath", "./templates/email")
 }
 
 // bindEnvironmentVariables binds all configuration keys to environment variables using mapstructure keys
@@ -216,6 +243,17 @@ func bindEnvironmentVariables() {
 	viper.BindEnv("filess3config.sse", "FOCALBOARD_FILESS3CONFIG_SSE")
 	viper.BindEnv("filess3config.trace", "FOCALBOARD_FILESS3CONFIG_TRACE")
 	viper.BindEnv("filess3config.timeout", "FOCALBOARD_FILESS3CONFIG_TIMEOUT")
+	
+	// Email Configuration fields
+	viper.BindEnv("emailConfig.smtpServer", "FOCALBOARD_EMAIL_SMTP_SERVER")
+	viper.BindEnv("emailConfig.smtpPort", "FOCALBOARD_EMAIL_SMTP_PORT")
+	viper.BindEnv("emailConfig.smtpUsername", "FOCALBOARD_EMAIL_SMTP_USERNAME")
+	viper.BindEnv("emailConfig.smtpPassword", "FOCALBOARD_EMAIL_SMTP_PASSWORD")
+	viper.BindEnv("emailConfig.smtpTls", "FOCALBOARD_EMAIL_SMTP_TLS")
+	viper.BindEnv("emailConfig.postmarkApiToken", "FOCALBOARD_EMAIL_POSTMARK_API_TOKEN")
+	viper.BindEnv("emailConfig.fromEmail", "FOCALBOARD_EMAIL_FROM_EMAIL")
+	viper.BindEnv("emailConfig.fromName", "FOCALBOARD_EMAIL_FROM_NAME")
+	viper.BindEnv("emailConfig.templatesPath", "FOCALBOARD_EMAIL_TEMPLATES_PATH")
 }
 
 // applyEnvironmentOverridesPre applies environment variable overrides before viper unmarshaling

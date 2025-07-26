@@ -83,6 +83,29 @@ func (a *App) GetFile(teamID, rootID, fileName string) (*mm_model.FileInfo, file
 		return nil, nil, err
 	}
 
+	// FIXUP: Check the deprecated old location for team ID "0"
+	if teamID == "0" && !exists {
+		oldExists, err2 := a.filesBackend.FileExists(fileName)
+		if err2 != nil {
+			a.logger.Error("GetFile: Failed to check if file exists at old location", mlog.String("filename", fileName), mlog.Err(err2))
+			return nil, nil, err2
+		}
+		if oldExists {
+			err2 := a.filesBackend.MoveFile(fileName, filePath)
+			if err2 != nil {
+				a.logger.Error("GetFile: ERROR moving file from old location",
+					mlog.String("old", fileName),
+					mlog.String("new", filePath),
+					mlog.Err(err2),
+				)
+				// Continue with old path if move fails
+				filePath = fileName
+			} else {
+				exists = true
+			}
+		}
+	}
+
 	if !exists {
 		return nil, nil, ErrFileNotFound
 	}

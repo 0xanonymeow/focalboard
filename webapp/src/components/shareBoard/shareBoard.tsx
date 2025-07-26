@@ -47,6 +47,7 @@ import {useHasPermissions} from '../../hooks/permissions'
 
 import TeamPermissionsRow from './teamPermissionsRow'
 import UserPermissionsRow from './userPermissionsRow'
+import EmailInvite from './emailInvite'
 
 import './shareBoard.scss'
 
@@ -382,6 +383,11 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
                     </div>
                 </div>
             </BoardPermissionGate>
+            
+            <BoardPermissionGate permissions={[Permission.ManageBoardRoles]}>
+                <EmailInvite/>
+            </BoardPermissionGate>
+            
             <div className='user-items'>
                 <TeamPermissionsRow/>
 

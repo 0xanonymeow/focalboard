@@ -1,0 +1,22 @@
+🎉 You've been invited to collaborate!
+
+Hi there!
+
+{{.InviterName}} has invited you to collaborate on the board "{{.BoardTitle}}" in Focalboard.
+
+Focalboard is a project management tool that helps teams organize, track, and manage their work. You'll be able to view cards, add comments, and collaborate in real-time.
+
+To accept the invitation and start collaborating, visit this link:
+{{.InviteURL}}
+
+What you can do:
+• View and organize project cards
+• Add comments and collaborate with your team
+• Track progress and manage tasks
+• Access the board from any device
+
+If you weren't expecting this invitation, you can safely ignore this email.
+
+---
+This invitation was sent by {{.FromName}}.
+Powered by Focalboard - Open source project management

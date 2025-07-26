@@ -159,6 +159,14 @@ type Store interface {
 	GetCardLimitTimestamp() (int64, error)
 	UpdateCardLimitTimestamp(cardLimit int) (int64, error)
 
+	// Board Invitations
+	CreateBoardInvitation(invitation *model.BoardInvitation) error
+	GetBoardInvitationByToken(token string) (*model.BoardInvitation, error)
+	GetBoardInvitationsForBoard(boardID string) ([]*model.BoardInvitation, error)
+	UpdateBoardInvitation(invitation *model.BoardInvitation) error
+	DeleteBoardInvitation(invitationID string) error
+	GetExpiredBoardInvitations() ([]*model.BoardInvitation, error)
+
 	DBType() string
 	DBVersion() string
 

@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS {{.prefix}}board_invitations;

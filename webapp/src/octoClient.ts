@@ -622,6 +622,15 @@ class OctoClient {
         return true
     }
 
+    async sendBoardInvitation(boardID: string, email: string, role: string): Promise<boolean> {
+        const response = await fetch(this.getBaseURL() + `/api/v2/boards/${boardID}/invite`, {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify({email, role}),
+        })
+        return response.status === 200
+    }
+
     async regenerateTeamSignupToken(): Promise<void> {
         const path = this.teamPath() + '/regenerate_signup_token'
         await fetch(this.getBaseURL() + path, {

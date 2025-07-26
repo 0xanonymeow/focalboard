@@ -1,6 +1,6 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, {useEffect, useMemo} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {
     Router,
     Switch,
@@ -17,6 +17,7 @@ import ErrorPage from './pages/errorPage'
 import LoginPage from './pages/loginPage'
 import RegisterPage from './pages/registerPage'
 import {Utils} from './utils'
+import {sendFlashMessage, clearFlashMessages} from './components/flashMessages'
 import octoClient from './octoClient'
 import {setGlobalError, getGlobalError} from './store/globalError'
 import {useAppSelector, useAppDispatch} from './store/hooks'
@@ -54,10 +55,40 @@ function GlobalErrorRedirect() {
 
     useEffect(() => {
         if (globalError) {
-            dispatch(setGlobalError(''))
-            history.replace(`/error?id=${globalError}`)
+            // For network errors, show persistent connection error instead of clearing immediately
+            if (globalError === 'network-error') {
+                sendFlashMessage({
+                    content: 'Connection error. Reconnecting...',
+                    severity: 'high',
+                    persistent: true
+                })
+                
+                // Start monitoring connection to clear error when reconnected
+                const checkConnection = async () => {
+                    try {
+                        // Try a simple API call to check if connection is restored
+                        await octoClient.getMe()
+                        // Connection restored - clear the error and flash message
+                        clearFlashMessages()
+                        dispatch(setGlobalError(''))
+                        sendFlashMessage({
+                            content: 'Connection restored',
+                            severity: 'normal'
+                        })
+                    } catch (error) {
+                        // Still disconnected, try again in 3 seconds
+                        setTimeout(checkConnection, 3000)
+                    }
+                }
+                
+                // Start checking after 3 seconds
+                setTimeout(checkConnection, 3000)
+            } else {
+                dispatch(setGlobalError(''))
+                history.replace(`/error?id=${globalError}`)
+            }
         }
-    }, [globalError, history])
+    }, [globalError, history, dispatch])
 
     return null
 }

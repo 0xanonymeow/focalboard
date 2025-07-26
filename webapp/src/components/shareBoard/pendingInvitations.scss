@@ -1,0 +1,163 @@
+.pending-invitations {
+    background: rgb(var(--center-channel-bg-rgb));
+    border: 1px solid rgb(var(--center-channel-color-rgb), 0.08);
+    border-radius: 4px;
+    padding: 16px;
+    
+    .pending-invitations-header {
+        font-size: 14px;
+        font-weight: 600;
+        color: rgb(var(--center-channel-color-rgb));
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        &:before {
+            content: "📧";
+            font-size: 16px;
+        }
+    }
+    
+    .pending-invitations-list {
+        max-height: 240px;
+        overflow-y: auto;
+        
+        .pending-invitation-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgb(var(--sidebar-bg-rgb));
+            border: 1px solid rgb(var(--center-channel-color-rgb), 0.08);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                border-color: rgb(var(--button-bg-rgb));
+                box-shadow: 0 2px 4px rgb(var(--center-channel-color-rgb), 0.1);
+            }
+            
+            &:last-child {
+                margin-bottom: 0;
+            }
+            
+            .invitation-info {
+                flex: 1;
+                min-width: 0;
+                
+                .invitation-email {
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: rgb(var(--center-channel-color-rgb));
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    
+                    &:before {
+                        content: "👤";
+                        font-size: 12px;
+                        opacity: 0.8;
+                    }
+                }
+                
+                .invitation-details {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-top: 4px;
+                    font-size: 12px;
+                    color: rgb(var(--center-channel-color-rgb), 0.72);
+                    
+                    .invitation-role {
+                        font-weight: 600;
+                        background: rgb(var(--button-bg-rgb), 0.1);
+                        color: rgb(var(--button-bg-rgb));
+                        padding: 2px 6px;
+                        border-radius: 3px;
+                        text-transform: capitalize;
+                    }
+                    
+                    .invitation-status {
+                        font-weight: 600;
+                        background: rgb(var(--online-indicator-rgb), 0.1);
+                        color: rgb(var(--online-indicator-rgb));
+                        padding: 2px 6px;
+                        border-radius: 3px;
+                        font-size: 11px;
+                        text-transform: uppercase;
+                    }
+                    
+                    .invitation-separator {
+                        color: rgb(var(--center-channel-color-rgb), 0.32);
+                    }
+                    
+                    .invitation-expires {
+                        white-space: nowrap;
+                        font-weight: 500;
+                    }
+                }
+            }
+            
+            .invitation-actions {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-left: 12px;
+                
+                .resend-button-container {
+                    position: relative;
+                    display: inline-block;
+                    
+                    .cooldown-button {
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 6px;
+                        background: transparent;
+                        color: rgb(var(--center-channel-color-rgb));
+                        font-size: 16px;
+                        font-weight: 700;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        line-height: 1;
+                        cursor: default;
+                        border: none;
+                    }
+                }
+                
+                .IconButton {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 6px;
+                    transition: all 0.2s ease;
+                    
+                    &:hover:not(.disabled) {
+                        background-color: rgb(var(--button-bg-rgb), 0.1);
+                        color: rgb(var(--button-bg-rgb));
+                        transform: scale(1.05);
+                    }
+                    
+                    &:last-child:hover {
+                        background-color: rgb(var(--error-text-color-rgb), 0.1);
+                        color: rgb(var(--error-text-color-rgb));
+                    }
+                    
+                    &.disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                        pointer-events: none;
+                    }
+                    
+                    .CompassIcon {
+                        font-size: 18px;
+                    }
+                }
+            }
+        }
+    }
+}

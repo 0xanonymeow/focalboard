@@ -29,4 +29,8 @@
         opacity: 0;
         transition: visibility 0s linear 200ms, opacity ease-in 200ms;
     }
+    
+    &.persistent {
+        cursor: default;
+    }
 }

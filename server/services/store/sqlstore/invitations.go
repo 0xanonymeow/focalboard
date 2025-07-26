@@ -50,6 +50,66 @@ func (s *SQLStore) CreateBoardInvitation(invitation *model.BoardInvitation) erro
 	return nil
 }
 
+// GetBoardInvitationByID retrieves a board invitation by ID
+func (s *SQLStore) GetBoardInvitationByID(invitationID string) (*model.BoardInvitation, error) {
+	query := s.getQueryBuilder(s.db).
+		Select(
+			"id",
+			"board_id",
+			"email",
+			"token",
+			"role",
+			"created_by",
+			"created_at",
+			"expires_at",
+			"used_at",
+			"used_by",
+			"last_sent_at",
+		).
+		From(s.tablePrefix + "board_invitations").
+		Where(sq.Eq{"id": invitationID})
+
+	row := query.QueryRow()
+
+	invitation := &model.BoardInvitation{}
+	var usedAt sql.NullInt64
+	var usedBy sql.NullString
+	var lastSentAt sql.NullInt64
+
+	err := row.Scan(
+		&invitation.ID,
+		&invitation.BoardID,
+		&invitation.Email,
+		&invitation.Token,
+		&invitation.Role,
+		&invitation.CreatedBy,
+		&invitation.CreatedAt,
+		&invitation.ExpiresAt,
+		&usedAt,
+		&usedBy,
+		&lastSentAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, model.NewErrNotFound("board invitation")
+		}
+		s.logger.Error("GetBoardInvitationByID error", mlog.Err(err))
+		return nil, err
+	}
+
+	if usedAt.Valid {
+		invitation.UsedAt = &usedAt.Int64
+	}
+	if usedBy.Valid {
+		invitation.UsedBy = &usedBy.String
+	}
+	if lastSentAt.Valid {
+		invitation.LastSentAt = &lastSentAt.Int64
+	}
+
+	return invitation, nil
+}
+
 // GetBoardInvitationByToken retrieves a board invitation by token
 func (s *SQLStore) GetBoardInvitationByToken(token string) (*model.BoardInvitation, error) {
 	query := s.getQueryBuilder(s.db).
@@ -64,6 +124,7 @@ func (s *SQLStore) GetBoardInvitationByToken(token string) (*model.BoardInvitati
 			"expires_at",
 			"used_at",
 			"used_by",
+			"last_sent_at",
 		).
 		From(s.tablePrefix + "board_invitations").
 		Where(sq.Eq{"token": token})
@@ -73,6 +134,7 @@ func (s *SQLStore) GetBoardInvitationByToken(token string) (*model.BoardInvitati
 	invitation := &model.BoardInvitation{}
 	var usedAt sql.NullInt64
 	var usedBy sql.NullString
+	var lastSentAt sql.NullInt64
 
 	err := row.Scan(
 		&invitation.ID,
@@ -85,6 +147,7 @@ func (s *SQLStore) GetBoardInvitationByToken(token string) (*model.BoardInvitati
 		&invitation.ExpiresAt,
 		&usedAt,
 		&usedBy,
+		&lastSentAt,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -99,6 +162,9 @@ func (s *SQLStore) GetBoardInvitationByToken(token string) (*model.BoardInvitati
 	}
 	if usedBy.Valid {
 		invitation.UsedBy = &usedBy.String
+	}
+	if lastSentAt.Valid {
+		invitation.LastSentAt = &lastSentAt.Int64
 	}
 
 	return invitation, nil
@@ -118,6 +184,7 @@ func (s *SQLStore) GetBoardInvitationsForBoard(boardID string) ([]*model.BoardIn
 			"expires_at",
 			"used_at",
 			"used_by",
+			"last_sent_at",
 		).
 		From(s.tablePrefix + "board_invitations").
 		Where(sq.Eq{"board_id": boardID}).
@@ -136,6 +203,7 @@ func (s *SQLStore) GetBoardInvitationsForBoard(boardID string) ([]*model.BoardIn
 		invitation := &model.BoardInvitation{}
 		var usedAt sql.NullInt64
 		var usedBy sql.NullString
+		var lastSentAt sql.NullInt64
 
 		err := rows.Scan(
 			&invitation.ID,
@@ -148,6 +216,7 @@ func (s *SQLStore) GetBoardInvitationsForBoard(boardID string) ([]*model.BoardIn
 			&invitation.ExpiresAt,
 			&usedAt,
 			&usedBy,
+			&lastSentAt,
 		)
 		if err != nil {
 			s.logger.Error("GetBoardInvitationsForBoard scan error", mlog.Err(err))
@@ -159,6 +228,9 @@ func (s *SQLStore) GetBoardInvitationsForBoard(boardID string) ([]*model.BoardIn
 		}
 		if usedBy.Valid {
 			invitation.UsedBy = &usedBy.String
+		}
+		if lastSentAt.Valid {
+			invitation.LastSentAt = &lastSentAt.Int64
 		}
 
 		invitations = append(invitations, invitation)
@@ -181,6 +253,9 @@ func (s *SQLStore) UpdateBoardInvitation(invitation *model.BoardInvitation) erro
 	}
 	if invitation.UsedBy != nil {
 		query = query.Set("used_by", *invitation.UsedBy)
+	}
+	if invitation.LastSentAt != nil {
+		query = query.Set("last_sent_at", *invitation.LastSentAt)
 	}
 
 	if _, err := query.Exec(); err != nil {
@@ -225,6 +300,7 @@ func (s *SQLStore) GetExpiredBoardInvitations() ([]*model.BoardInvitation, error
 			"expires_at",
 			"used_at",
 			"used_by",
+			"last_sent_at",
 		).
 		From(s.tablePrefix + "board_invitations").
 		Where(sq.Lt{"expires_at": now}).

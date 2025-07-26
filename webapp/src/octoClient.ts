@@ -631,6 +631,33 @@ class OctoClient {
         return response.status === 200
     }
 
+    async getBoardInvitations(boardID: string): Promise<any[]> {
+        const response = await fetch(this.getBaseURL() + `/api/v2/boards/${boardID}/invitations`, {
+            method: 'GET',
+            headers: this.headers(),
+        })
+        if (response.status !== 200) {
+            return []
+        }
+        return response.json()
+    }
+
+    async resendInvitation(invitationID: string): Promise<boolean> {
+        const response = await fetch(this.getBaseURL() + `/api/v2/invitations/${invitationID}/resend`, {
+            method: 'POST',
+            headers: this.headers(),
+        })
+        return response.status === 200
+    }
+
+    async deleteInvitation(invitationID: string): Promise<boolean> {
+        const response = await fetch(this.getBaseURL() + `/api/v2/invitations/${invitationID}`, {
+            method: 'DELETE',
+            headers: this.headers(),
+        })
+        return response.status === 200
+    }
+
     async regenerateTeamSignupToken(): Promise<void> {
         const path = this.teamPath() + '/regenerate_signup_token'
         await fetch(this.getBaseURL() + path, {

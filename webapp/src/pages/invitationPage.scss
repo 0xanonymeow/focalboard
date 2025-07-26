@@ -1,0 +1,127 @@
+.InvitationPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: rgb(var(--center-channel-bg-rgb));
+    padding: 20px;
+
+    .invitation-container {
+        background: rgb(var(--sidebar-bg-rgb));
+        border: 1px solid rgb(var(--center-channel-color-rgb), 0.12);
+        border-radius: 8px;
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 4px 8px rgb(var(--center-channel-color-rgb), 0.12);
+
+        .invitation-header {
+            text-align: center;
+            margin-bottom: 30px;
+
+            h1 {
+                color: rgb(var(--center-channel-color-rgb));
+                font-size: 24px;
+                font-weight: 600;
+                margin: 0;
+            }
+        }
+
+        .invitation-content {
+            .invitation-details {
+                text-align: center;
+                margin-bottom: 30px;
+
+                p {
+                    color: rgb(var(--center-channel-color-rgb), 0.8);
+                    margin: 0 0 16px 0;
+                    font-size: 16px;
+                }
+
+                .board-title {
+                    color: rgb(var(--center-channel-color-rgb));
+                    font-size: 20px;
+                    font-weight: 600;
+                    margin: 20px 0;
+                    padding: 16px;
+                    background: rgb(var(--center-channel-bg-rgb));
+                    border: 1px solid rgb(var(--center-channel-color-rgb), 0.12);
+                    border-radius: 6px;
+                }
+
+                .invitation-email {
+                    font-weight: 500;
+                    color: rgb(var(--button-bg-rgb));
+                }
+
+                .invitation-role {
+                    font-weight: 500;
+                    text-transform: capitalize;
+                }
+            }
+
+            .invitation-actions {
+                text-align: center;
+
+                .auth-buttons {
+                    p {
+                        color: rgb(var(--center-channel-color-rgb), 0.8);
+                        margin-bottom: 20px;
+                        font-size: 14px;
+                    }
+
+                    .button-group {
+                        display: flex;
+                        gap: 12px;
+                        justify-content: center;
+                        flex-wrap: wrap;
+
+                        .Button {
+                            min-width: 120px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .invitation-loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgb(var(--center-channel-color-rgb), 0.8);
+            font-size: 16px;
+        }
+
+        .invitation-error {
+            text-align: center;
+
+            h2 {
+                color: rgb(var(--error-text-color-rgb));
+                font-size: 20px;
+                margin: 0 0 16px 0;
+            }
+
+            p {
+                color: rgb(var(--center-channel-color-rgb), 0.8);
+                margin: 0 0 20px 0;
+                font-size: 16px;
+            }
+        }
+    }
+
+    @media (max-width: 600px) {
+        padding: 10px;
+
+        .invitation-container {
+            padding: 20px;
+
+            .invitation-content .invitation-actions .auth-buttons .button-group {
+                flex-direction: column;
+                align-items: center;
+
+                .Button {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

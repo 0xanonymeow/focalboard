@@ -9,6 +9,7 @@ import {fetchMe, getLoggedIn} from '../store/users'
 
 import Button from '../widgets/buttons/button'
 import client from '../octoClient'
+import {Utils} from '../utils'
 import './loginPage.scss'
 
 const LoginPage = () => {
@@ -24,6 +25,15 @@ const LoginPage = () => {
         const logged = await client.login(username, password)
         if (logged) {
             await dispatch(fetchMe())
+            
+            // Check for stored invitation token
+            const invitationToken = Utils.getLocalStorage('invitation_token')
+            if (invitationToken) {
+                Utils.setLocalStorage('invitation_token', '')
+                history.push(`/invite/${invitationToken}`)
+                return
+            }
+            
             if (queryParams) {
                 history.push(queryParams.get('r') || '/')
             } else {

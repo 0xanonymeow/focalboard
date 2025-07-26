@@ -1183,6 +1183,38 @@ class OctoClient {
             headers: this.headers(),
         })
     }
+
+    // Invitation methods
+    async getInvitation(token: string): Promise<any> {
+        const path = `/api/v2/invite/${token}`
+        const response = await fetch(this.getBaseURL() + path, {
+            method: 'GET',
+            headers: this.headers(),
+        })
+
+        if (response.status !== 200) {
+            const error = await response.text()
+            throw new Error(error || 'Failed to get invitation')
+        }
+
+        return this.getJson(response, {})
+    }
+
+    async acceptInvitation(token: string): Promise<boolean> {
+        const path = `/api/v2/invite/${token}/accept`
+        const response = await fetch(this.getBaseURL() + path, {
+            method: 'POST',
+            headers: this.headers(),
+            body: '{}',
+        })
+
+        if (response.status !== 200) {
+            const error = await response.text()
+            throw new Error(error || 'Failed to accept invitation')
+        }
+
+        return true
+    }
 }
 
 const octoClient = new OctoClient()

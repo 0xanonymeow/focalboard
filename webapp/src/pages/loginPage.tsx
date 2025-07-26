@@ -27,9 +27,9 @@ const LoginPage = () => {
             await dispatch(fetchMe())
             
             // Check for stored invitation token
-            const invitationToken = Utils.getLocalStorage('invitation_token')
+            const invitationToken = localStorage.getItem('invitation_token')
             if (invitationToken) {
-                Utils.setLocalStorage('invitation_token', '')
+                localStorage.removeItem('invitation_token')
                 history.push(`/invite/${invitationToken}`)
                 return
             }

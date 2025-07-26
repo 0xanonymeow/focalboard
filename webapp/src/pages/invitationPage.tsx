@@ -5,7 +5,8 @@ import React, {useState, useEffect} from 'react'
 import {useParams, useHistory} from 'react-router-dom'
 import {FormattedMessage, useIntl} from 'react-intl'
 
-import {Utils} from '../utils'
+import {useAppSelector} from '../store/hooks'
+import {getLoggedIn} from '../store/users'
 import client from '../octoClient'
 import {sendFlashMessage} from '../components/flashMessages'
 import Button from '../widgets/buttons/button'
@@ -23,6 +24,7 @@ const InvitationPage = (): JSX.Element => {
     const intl = useIntl()
     const history = useHistory()
     const {token} = useParams<{token: string}>()
+    const isLoggedIn = useAppSelector<boolean|null>(getLoggedIn)
     const [invitationInfo, setInvitationInfo] = useState<InvitationInfo | null>(null)
     const [loading, setLoading] = useState(true)
     const [accepting, setAccepting] = useState(false)
@@ -98,13 +100,13 @@ const InvitationPage = (): JSX.Element => {
 
     const handleLogin = () => {
         // Store the invitation token to continue after login
-        Utils.setLocalStorage('invitation_token', token || '')
+        localStorage.setItem('invitation_token', token || '')
         history.push('/login')
     }
 
     const handleRegister = () => {
         // Store the invitation token to continue after registration
-        Utils.setLocalStorage('invitation_token', token || '')
+        localStorage.setItem('invitation_token', token || '')
         history.push('/register')
     }
 
@@ -151,8 +153,7 @@ const InvitationPage = (): JSX.Element => {
         )
     }
 
-    // Check if user is logged in
-    const isLoggedIn = Boolean(client.getLoggedInUser())
+    // User login status is now available from Redux state
 
     return (
         <div className='InvitationPage'>

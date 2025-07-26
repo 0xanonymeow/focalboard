@@ -512,6 +512,11 @@ func mmUserToFbUser(mmUser *mmModel.User) model.User {
 }
 
 func (s *MattermostAuthLayer) GetFileInfo(id string) (*mmModel.FileInfo, error) {
+	// In standalone mode, use the SQLStore directly instead of Mattermost services API
+	if s.servicesAPI == nil {
+		return s.Store.GetFileInfo(id)
+	}
+
 	fileInfo, err := s.servicesAPI.GetFileInfo(id)
 	if err != nil {
 		// Not finding fileinfo is fine because we don't have data for
@@ -535,64 +540,8 @@ func (s *MattermostAuthLayer) GetFileInfo(id string) (*mmModel.FileInfo, error) 
 }
 
 func (s *MattermostAuthLayer) SaveFileInfo(fileInfo *mmModel.FileInfo) error {
-	query := s.getQueryBuilder().
-		Insert("FileInfo").
-		Columns(
-			"Id",
-			"CreatorId",
-			"PostId",
-			"CreateAt",
-			"UpdateAt",
-			"DeleteAt",
-			"Path",
-			"ThumbnailPath",
-			"PreviewPath",
-			"Name",
-			"Extension",
-			"Size",
-			"MimeType",
-			"Width",
-			"Height",
-			"HasPreviewImage",
-			"MiniPreview",
-			"Content",
-			"RemoteId",
-			"Archived",
-		).
-		Values(
-			fileInfo.Id,
-			fileInfo.CreatorId,
-			fileInfo.PostId,
-			fileInfo.CreateAt,
-			fileInfo.UpdateAt,
-			fileInfo.DeleteAt,
-			fileInfo.Path,
-			fileInfo.ThumbnailPath,
-			fileInfo.PreviewPath,
-			fileInfo.Name,
-			fileInfo.Extension,
-			fileInfo.Size,
-			fileInfo.MimeType,
-			fileInfo.Width,
-			fileInfo.Height,
-			fileInfo.HasPreviewImage,
-			fileInfo.MiniPreview,
-			fileInfo.Content,
-			fileInfo.RemoteId,
-			false,
-		)
-
-	if _, err := query.Exec(); err != nil {
-		s.logger.Error(
-			"failed to save fileinfo",
-			mlog.String("file_name", fileInfo.Name),
-			mlog.Int("size", fileInfo.Size),
-			mlog.Err(err),
-		)
-		return err
-	}
-
-	return nil
+	// Use the SQLStore implementation to handle proper table names and schema
+	return s.Store.SaveFileInfo(fileInfo)
 }
 
 func (s *MattermostAuthLayer) GetLicense() *mmModel.License {

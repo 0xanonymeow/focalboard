@@ -1342,3 +1342,32 @@ func (s *MattermostAuthLayer) CanSeeUser(seerID string, seenID string) (bool, er
 
 	return false, nil
 }
+
+// Board Invitations - delegate to SQLStore
+func (s *MattermostAuthLayer) CreateBoardInvitation(invitation *model.BoardInvitation) error {
+	return s.Store.CreateBoardInvitation(invitation)
+}
+
+func (s *MattermostAuthLayer) GetBoardInvitationByID(invitationID string) (*model.BoardInvitation, error) {
+	return s.Store.GetBoardInvitationByID(invitationID)
+}
+
+func (s *MattermostAuthLayer) GetBoardInvitationByToken(token string) (*model.BoardInvitation, error) {
+	return s.Store.GetBoardInvitationByToken(token)
+}
+
+func (s *MattermostAuthLayer) GetBoardInvitationsForBoard(boardID string) ([]*model.BoardInvitation, error) {
+	return s.Store.GetBoardInvitationsForBoard(boardID)
+}
+
+func (s *MattermostAuthLayer) UpdateBoardInvitation(invitation *model.BoardInvitation) error {
+	return s.Store.UpdateBoardInvitation(invitation)
+}
+
+func (s *MattermostAuthLayer) DeleteBoardInvitation(invitationID string) error {
+	return s.Store.DeleteBoardInvitation(invitationID)
+}
+
+func (s *MattermostAuthLayer) GetExpiredBoardInvitations() ([]*model.BoardInvitation, error) {
+	return s.Store.GetExpiredBoardInvitations()
+}

@@ -342,9 +342,9 @@ func (s *SQLStore) updateUserPreference(db sq.BaseRunner, preference mmModel.Pre
 func (s *SQLStore) deleteUserPreference(db sq.BaseRunner, preference mmModel.Preference) error {
 	query := s.getQueryBuilder(db).
 		Delete(s.tablePrefix + "preferences").
-		Where(sq.Eq{"UserId": preference.UserId}).
-		Where(sq.Eq{"Category": preference.Category}).
-		Where(sq.Eq{"Name": preference.Name})
+		Where(sq.Eq{"userid": preference.UserId}).
+		Where(sq.Eq{"category": preference.Category}).
+		Where(sq.Eq{"name": preference.Name})
 
 	if _, err := query.Exec(); err != nil {
 		return fmt.Errorf("failed to delete user preference from database: %w", err)

@@ -1,16 +1,16 @@
 .InvitationPage {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     min-height: 100vh;
     background: rgb(var(--center-channel-bg-rgb));
-    padding: 20px;
+    padding: 60px 20px 20px 20px;
 
     .invitation-container {
         background: rgb(var(--sidebar-bg-rgb));
         border: 1px solid rgb(var(--center-channel-color-rgb), 0.12);
         border-radius: 8px;
-        padding: 40px;
+        padding: 32px;
         max-width: 500px;
         width: 100%;
         box-shadow: 0 4px 8px rgb(var(--center-channel-color-rgb), 0.12);
@@ -109,7 +109,7 @@
     }
 
     @media (max-width: 600px) {
-        padding: 10px;
+        padding: 40px 10px 10px 10px;
 
         .invitation-container {
             padding: 20px;

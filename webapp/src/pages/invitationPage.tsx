@@ -99,14 +99,20 @@ const InvitationPage = (): JSX.Element => {
     }
 
     const handleLogin = () => {
-        // Store the invitation token to continue after login
+        // Store the invitation token and email to continue after login
         localStorage.setItem('invitation_token', token || '')
+        if (invitationInfo?.email) {
+            localStorage.setItem('invitation_email', invitationInfo.email)
+        }
         history.push('/login')
     }
 
     const handleRegister = () => {
-        // Store the invitation token to continue after registration
+        // Store the invitation token and email to continue after registration
         localStorage.setItem('invitation_token', token || '')
+        if (invitationInfo?.email) {
+            localStorage.setItem('invitation_email', invitationInfo.email)
+        }
         history.push('/register')
     }
 

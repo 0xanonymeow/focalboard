@@ -1,6 +1,6 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useHistory, Link, Redirect} from 'react-router-dom'
 import {FormattedMessage} from 'react-intl'
 
@@ -17,11 +17,28 @@ const RegisterPage = () => {
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
+    const [isFromInvitation, setIsFromInvitation] = useState(false)
     const history = useHistory()
     const dispatch = useAppDispatch()
     const loggedIn = useAppSelector<boolean|null>(getLoggedIn)
 
+    // Check for invitation email and pre-fill
+    useEffect(() => {
+        const invitationEmail = localStorage.getItem('invitation_email')
+        if (invitationEmail) {
+            setEmail(invitationEmail)
+            setIsFromInvitation(true)
+        }
+    }, [])
+
     const handleRegister = async (): Promise<void> => {
+        // Validate email matches invitation if coming from invitation
+        const invitationEmail = localStorage.getItem('invitation_email')
+        if (invitationEmail && email !== invitationEmail) {
+            setErrorMessage('Email must match the invitation email address')
+            return
+        }
+
         const queryString = new URLSearchParams(window.location.search)
         const signupToken = queryString.get('t') || ''
 
@@ -35,6 +52,7 @@ const RegisterPage = () => {
                 const invitationToken = localStorage.getItem('invitation_token')
                 if (invitationToken) {
                     localStorage.removeItem('invitation_token')
+                    localStorage.removeItem('invitation_email')
                     history.push(`/invite/${invitationToken}`)
                     return
                 }
@@ -69,10 +87,23 @@ const RegisterPage = () => {
                 <div className='email'>
                     <input
                         id='login-email'
-                        placeholder={'Enter email'}
+                        placeholder={isFromInvitation ? 'Email (from invitation)' : 'Enter email'}
                         value={email}
                         onChange={(e) => setEmail(e.target.value.trim())}
+                        readOnly={isFromInvitation}
+                        style={{
+                            backgroundColor: isFromInvitation ? 'rgb(var(--center-channel-bg-rgb))' : undefined,
+                            cursor: isFromInvitation ? 'not-allowed' : undefined
+                        }}
                     />
+                    {isFromInvitation && (
+                        <div className='email-locked-message'>
+                            <FormattedMessage
+                                id='register.email-locked'
+                                defaultMessage='Email is pre-filled from your invitation'
+                            />
+                        </div>
+                    )}
                 </div>
                 <div className='username'>
                     <input

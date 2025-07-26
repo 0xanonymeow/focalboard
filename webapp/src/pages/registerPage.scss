@@ -53,6 +53,21 @@
             border-radius: 4px;
             min-height: 44px;
             padding: 7px;
+
+            &[readonly] {
+                background-color: rgb(var(--center-channel-bg-rgb));
+                border-color: rgb(var(--center-channel-color-rgb), 0.3);
+                cursor: not-allowed;
+                color: rgb(var(--center-channel-color-rgb), 0.7);
+            }
+        }
+
+        .email-locked-message {
+            font-size: 12px;
+            color: rgb(var(--center-channel-color-rgb), 0.6);
+            margin-top: 4px;
+            padding-left: 4px;
+            font-style: italic;
         }
     }
 

@@ -90,10 +90,26 @@ func (a *App) ImportArchive(r io.Reader, opt model.ImportArchiveOptions) error {
 				)
 				continue
 			}
+			
+			// Skip 0-byte files
+			if hdr.UncompressedSize64 == 0 {
+				a.logger.Warn("Skipping empty file in archive",
+					mlog.String("filename", filename),
+					mlog.String("boardID", board.ID),
+				)
+				continue
+			}
+			
 			// Use streaming version for memory efficiency
 			newFileName, err := a.SaveFileStreaming(zr, opt.TeamID, board.ID, filename, board.IsTemplate)
 			if err != nil {
-				return fmt.Errorf("cannot import file %s for board %s: %w", filename, dir, err)
+				// Log error but continue with other files instead of failing entire import
+				a.logger.Error("Failed to import file, skipping",
+					mlog.String("filename", filename),
+					mlog.String("boardID", board.ID),
+					mlog.Err(err),
+				)
+				continue
 			}
 			fileMap[filename] = newFileName
 

@@ -159,6 +159,20 @@ func writeBoard(w *zip.Writer, boardID string, cfg appConfig) error {
 }
 
 func writeFile(w *zip.Writer, srcPath string, destPath string, cfg appConfig) (err error) {
+	// Check file size before adding to archive
+	fileInfo, err := os.Stat(srcPath)
+	if err != nil {
+		return fmt.Errorf("error checking file %s: %w", srcPath, err)
+	}
+	
+	// Skip 0-byte files
+	if fileInfo.Size() == 0 {
+		if cfg.verbose {
+			fmt.Fprintf(os.Stdout, "WARNING: Skipping empty file %s\n", srcPath)
+		}
+		return nil
+	}
+
 	inFile, err := os.Open(srcPath)
 	if err != nil {
 		return fmt.Errorf("error reading %s: %w", srcPath, err)

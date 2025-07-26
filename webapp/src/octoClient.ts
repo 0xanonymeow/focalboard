@@ -1084,7 +1084,10 @@ class OctoClient {
         }
 
         const limits = (await this.getJson(response, {})) as BoardsCloudLimits
-        Utils.log(`Cloud limits: cards=${limits.cards}   views=${limits.views}`)
+        // Only log cloud limits if they are actually defined (cloud/hosted environment)
+        if (limits.cards !== undefined && limits.views !== undefined) {
+            Utils.log(`Cloud limits: cards=${limits.cards}   views=${limits.views}`)
+        }
         return limits
     }
 

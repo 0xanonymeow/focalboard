@@ -7,13 +7,13 @@
     padding: 60px 20px 20px 20px;
 
     .invitation-container {
-        background: rgb(var(--sidebar-bg-rgb));
-        border: 1px solid rgb(var(--center-channel-color-rgb), 0.12);
+        background: rgb(var(--center-channel-bg-rgb));
+        border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
         border-radius: 8px;
         padding: 32px;
         max-width: 500px;
         width: 100%;
-        box-shadow: 0 4px 8px rgb(var(--center-channel-color-rgb), 0.12);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 
         .invitation-header {
             text-align: center;
@@ -44,8 +44,8 @@
                     font-weight: 600;
                     margin: 20px 0;
                     padding: 16px;
-                    background: rgb(var(--center-channel-bg-rgb));
-                    border: 1px solid rgb(var(--center-channel-color-rgb), 0.12);
+                    background: rgba(var(--button-bg-rgb), 0.08);
+                    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
                     border-radius: 6px;
                 }
 

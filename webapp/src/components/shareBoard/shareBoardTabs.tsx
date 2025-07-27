@@ -25,8 +25,10 @@ const ShareBoardTabs = ({children}: Props) => {
     const board = useAppSelector(getCurrentBoard)
     const me = useAppSelector(getMe)
     const canInvite = useHasPermissions(board.teamId, board.id, [Permission.ManageBoardRoles])
+    const canShare = useHasPermissions(board.teamId, board.id, [Permission.ShareBoard])
     
-    const [activeTab, setActiveTab] = useState<'invite' | 'share'>(canInvite ? 'invite' : 'share')
+    const defaultTab = canInvite ? 'invite' : (canShare ? 'share' : null)
+    const [activeTab, setActiveTab] = useState<'invite' | 'share' | null>(defaultTab)
     const pendingInvitationsRef = useRef<{refresh: () => void}>(null)
 
     const allTabs = [
@@ -34,32 +36,45 @@ const ShareBoardTabs = ({children}: Props) => {
             id: 'invite' as const,
             label: intl.formatMessage({id: 'ShareBoard.tab-invite', defaultMessage: 'Invite People'}),
             icon: 'email-outline',
+            visible: canInvite,
         },
         {
             id: 'share' as const,
             label: intl.formatMessage({id: 'ShareBoard.tab-share', defaultMessage: 'Share & Manage'}),
             icon: 'link-variant',
+            visible: canShare,
         },
     ]
     
     // Filter tabs based on permissions
-    const tabs = canInvite ? allTabs : allTabs.filter(tab => tab.id !== 'invite')
+    const tabs = allTabs.filter(tab => tab.visible)
+
+    // If no tabs are visible, return null or a message
+    if (tabs.length === 0) {
+        return (
+            <div className='share-board-tabs no-permissions'>
+                <p>{intl.formatMessage({id: 'ShareBoard.no-permissions', defaultMessage: 'You do not have permission to share or invite people to this board.'})}</p>
+            </div>
+        )
+    }
 
     return (
         <div className='share-board-tabs'>
-            <div className='share-board-tabs-header'>
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        type='button'
-                        className={`share-board-tab ${activeTab === tab.id ? 'active' : ''}`}
-                        onClick={() => setActiveTab(tab.id)}
-                    >
-                        <CompassIcon icon={tab.icon}/>
-                        <span>{tab.label}</span>
-                    </button>
-                ))}
-            </div>
+            {tabs.length > 1 && (
+                <div className='share-board-tabs-header'>
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            type='button'
+                            className={`share-board-tab ${activeTab === tab.id ? 'active' : ''}`}
+                            onClick={() => setActiveTab(tab.id)}
+                        >
+                            <CompassIcon icon={tab.icon}/>
+                            <span>{tab.label}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
 
             <div className='share-board-tabs-content'>
                 {activeTab === 'invite' && canInvite && (
@@ -71,7 +86,7 @@ const ShareBoardTabs = ({children}: Props) => {
                     </div>
                 )}
 
-                {activeTab === 'share' && (
+                {activeTab === 'share' && canShare && (
                     <div className='share-tab-content'>
                         {children}
                     </div>

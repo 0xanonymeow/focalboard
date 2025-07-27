@@ -17,4 +17,12 @@ CREATE INDEX IF NOT EXISTS idx_password_reset_expires_at ON {{.prefix}}password_
 {{end}}
 
 -- Add last_password_reset_at to track cooldowns per user
+{{if .postgres}}
 ALTER TABLE {{.prefix}}users ADD COLUMN IF NOT EXISTS last_password_reset_at BIGINT DEFAULT 0;
+{{end}}
+{{if .mysql}}
+ALTER TABLE {{.prefix}}users ADD COLUMN IF NOT EXISTS last_password_reset_at BIGINT DEFAULT 0;
+{{end}}
+{{if .sqlite}}
+ALTER TABLE {{.prefix}}users ADD COLUMN last_password_reset_at BIGINT DEFAULT 0;
+{{end}}

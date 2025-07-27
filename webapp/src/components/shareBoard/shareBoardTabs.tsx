@@ -7,6 +7,10 @@ import {useIntl, FormattedMessage} from 'react-intl'
 import CompassIcon from '../../widgets/icons/compassIcon'
 import BoardPermissionGate from '../permissions/boardPermissionGate'
 import {Permission} from '../../constants'
+import {useAppSelector} from '../../store/hooks'
+import {getCurrentBoard} from '../../store/boards'
+import {getMe} from '../../store/users'
+import {useHasPermissions} from '../../hooks/permissions'
 
 import EmailInvite from './emailInvite'
 import PendingInvitations from './pendingInvitations'
@@ -18,10 +22,14 @@ interface Props {
 
 const ShareBoardTabs = ({children}: Props) => {
     const intl = useIntl()
-    const [activeTab, setActiveTab] = useState<'invite' | 'share'>('invite')
+    const board = useAppSelector(getCurrentBoard)
+    const me = useAppSelector(getMe)
+    const canInvite = useHasPermissions(board.teamId, board.id, [Permission.ManageBoardRoles])
+    
+    const [activeTab, setActiveTab] = useState<'invite' | 'share'>(canInvite ? 'invite' : 'share')
     const pendingInvitationsRef = useRef<{refresh: () => void}>(null)
 
-    const tabs = [
+    const allTabs = [
         {
             id: 'invite' as const,
             label: intl.formatMessage({id: 'ShareBoard.tab-invite', defaultMessage: 'Invite People'}),
@@ -33,6 +41,9 @@ const ShareBoardTabs = ({children}: Props) => {
             icon: 'link-variant',
         },
     ]
+    
+    // Filter tabs based on permissions
+    const tabs = canInvite ? allTabs : allTabs.filter(tab => tab.id !== 'invite')
 
     return (
         <div className='share-board-tabs'>
@@ -51,7 +62,7 @@ const ShareBoardTabs = ({children}: Props) => {
             </div>
 
             <div className='share-board-tabs-content'>
-                {activeTab === 'invite' && (
+                {activeTab === 'invite' && canInvite && (
                     <div className='invite-tab-content'>
                         <BoardPermissionGate permissions={[Permission.ManageBoardRoles]}>
                             <EmailInvite onInvitationSent={() => pendingInvitationsRef.current?.refresh()}/>

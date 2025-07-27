@@ -300,8 +300,8 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
             return (
                 <div className='user-item'>
                     <div className='ml-3'>
-                        <strong>{Utils.getUserDisplayName(user, clientConfig.teammateNameDisplay)}</strong>
-                        <strong className='ml-2 text-light'>{`@${user.username}`}</strong>
+                        <strong>{user.username}</strong>
+                        <strong className='ml-2 text-light'>{user.email ? `(${user.email})` : ''}</strong>
                         <GuestBadge show={Boolean(user?.is_guest)}/>
                         <AdminBadge permissions={user.permissions}/>
                     </div>

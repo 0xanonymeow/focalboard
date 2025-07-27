@@ -56,8 +56,8 @@ const UserPermissionsRow = (props: Props): JSX.Element => {
         >
             <div className='user-item__content'>
                 <div className='ml-3'>
-                    <strong>{Utils.getUserDisplayName(user, teammateNameDisplay)}</strong>
-                    <strong className='ml-2 text-light'>{`@${user.username}`}</strong>
+                    <strong>{user.username}</strong>
+                    <strong className='ml-2 text-light'>{user.email ? `(${user.email})` : ''}</strong>
                     {isMe && <strong className='ml-2 text-light'>{intl.formatMessage({id: 'ShareBoard.userPermissionsYouText', defaultMessage: '(You)'})}</strong>}
                     <GuestBadge show={user.is_guest}/>
                     <AdminBadge permissions={user.permissions}/>

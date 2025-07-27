@@ -321,13 +321,13 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
     )
 
     const formatOptionLabel = (userOrChannel: IUser | Channel) => {
-        if ((userOrChannel as IUser).username) {
+        if ((userOrChannel as IUser).username || (userOrChannel as IUser).email) {
             const user = userOrChannel as IUser
             return (
                 <div className='user-item'>
                     <div className='ml-3'>
-                        <strong>{user.username}</strong>
-                        <strong className='ml-2 text-light'>{user.email ? `(${user.email})` : ''}</strong>
+                        <strong>{user.username || user.email || 'Unknown User'}</strong>
+                        {user.username && user.email && <strong className='ml-2 text-light'>({user.email})</strong>}
                         <GuestBadge show={Boolean(user?.is_guest)}/>
                         <AdminBadge permissions={user.permissions}/>
                     </div>

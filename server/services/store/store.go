@@ -69,6 +69,14 @@ type Store interface {
 	PatchUserPreferences(userID string, patch model.UserPreferencesPatch) (mmModel.Preferences, error)
 	GetUserPreferences(userID string) (mmModel.Preferences, error)
 
+	// Password reset methods
+	CreatePasswordResetToken(token *model.PasswordResetToken) error
+	GetPasswordResetToken(token string) (*model.PasswordResetToken, error)
+	UpdatePasswordResetTokenUsed(token string) error
+	DeleteExpiredPasswordResetTokens() error
+	GetUserLastPasswordResetAt(userID string) (int64, error)
+	UpdateUserLastPasswordResetAt(userID string, timestamp int64) error
+
 	GetActiveUserCount(updatedSecondsAgo int64) (int, error)
 	GetSession(token string, expireTime int64) (*model.Session, error)
 	CreateSession(session *model.Session) error

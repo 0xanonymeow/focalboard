@@ -198,6 +198,36 @@ class OctoClient {
         return {code: response.status, json}
     }
 
+    async requestPasswordReset(email: string): Promise<void> {
+        const path = '/api/v2/users/password/reset'
+        const body = JSON.stringify({email})
+        const response = await fetch(this.getBaseURL() + path, {
+            method: 'POST',
+            headers: this.headers(),
+            body,
+        })
+
+        if (response.status !== 200) {
+            const text = await response.text()
+            throw new Error(text || 'Failed to request password reset')
+        }
+    }
+
+    async resetPassword(token: string, newPassword: string): Promise<void> {
+        const path = `/api/v2/users/password/reset/${token}`
+        const body = JSON.stringify({password: newPassword})
+        const response = await fetch(this.getBaseURL() + path, {
+            method: 'POST',
+            headers: this.headers(),
+            body,
+        })
+
+        if (response.status !== 200) {
+            const text = await response.text()
+            throw new Error(text || 'Failed to reset password')
+        }
+    }
+
     private headers() {
         return {
             Accept: 'application/json',

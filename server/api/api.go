@@ -75,6 +75,7 @@ func (a *API) RegisterRoutes(r *mux.Router) {
 	// V2 routes (ToDo: migrate these to V3 when ready to ship V3)
 	a.registerUsersRoutes(apiv2)
 	a.registerAuthRoutes(apiv2)
+	a.registerPasswordResetRoutes(apiv2)
 	a.registerMembersRoutes(apiv2)
 	a.registerInvitationRoutes(apiv2)
 	a.registerCategoriesRoutes(apiv2)

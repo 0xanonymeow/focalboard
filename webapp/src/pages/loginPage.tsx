@@ -96,12 +96,20 @@ const LoginPage = () => {
                     />
                 </Button>
             </form>
-            <Link to='/register'>
-                <FormattedMessage
-                    id='login.register-button'
-                    defaultMessage={'or create an account if you don\'t have one'}
-                />
-            </Link>
+            <div className='login-links'>
+                <Link to='/forgot-password'>
+                    <FormattedMessage
+                        id='login.forgot-password'
+                        defaultMessage='Forgot your password?'
+                    />
+                </Link>
+                <Link to='/register'>
+                    <FormattedMessage
+                        id='login.register-button'
+                        defaultMessage={'or create an account if you don\'t have one'}
+                    />
+                </Link>
+            </div>
             {errorMessage &&
                 <div className='error'>
                     {errorMessage}

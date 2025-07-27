@@ -14,9 +14,11 @@ import {createBrowserHistory, History} from 'history'
 import BoardPage from './pages/boardPage/boardPage'
 import ChangePasswordPage from './pages/changePasswordPage'
 import ErrorPage from './pages/errorPage'
+import ForgotPasswordPage from './pages/forgotPasswordPage'
 import InvitationPage from './pages/invitationPage'
 import LoginPage from './pages/loginPage'
 import RegisterPage from './pages/registerPage'
+import ResetPasswordPage from './pages/resetPasswordPage'
 import {Utils} from './utils'
 import {sendFlashMessage, clearFlashMessages} from './components/flashMessages'
 import octoClient from './octoClient'
@@ -124,6 +126,12 @@ const FocalboardRouter = (props: Props): JSX.Element => {
                 </FBRoute>
                 <FBRoute path='/change_password'>
                     <ChangePasswordPage/>
+                </FBRoute>
+                <FBRoute path='/forgot-password'>
+                    <ForgotPasswordPage/>
+                </FBRoute>
+                <FBRoute path='/reset-password'>
+                    <ResetPasswordPage/>
                 </FBRoute>
 
                 <FBRoute path='/invite/:token'>

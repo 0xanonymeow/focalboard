@@ -11,6 +11,7 @@ import {Board} from '../../blocks/board'
 import IconButton from '../../widgets/buttons/iconButton'
 import CloseIcon from '../../widgets/icons/close'
 import Button from '../../widgets/buttons/button'
+import LoadingButton from '../../widgets/buttons/loadingButton'
 import octoClient from '../../octoClient'
 import mutator from '../../mutator'
 import {getTemplates, getCurrentBoardId} from '../../store/boards'
@@ -189,7 +190,7 @@ const BoardTemplateSelector = (props: Props) => {
                             ))}
                         </div>
                         <div className='templates-sidebar__footer'>
-                            <Button
+                            <LoadingButton
                                 emphasis='secondary'
                                 size={'medium'}
                                 icon={<CompassIcon icon='kanban'/>}
@@ -198,12 +199,18 @@ const BoardTemplateSelector = (props: Props) => {
                                     const board = boardsAndBlocks.boards[0]
                                     await mutator.updateBoard({...board, channelId: props.channelId || ''}, board, 'linked channel')
                                 }}
+                                loadingText={
+                                    <FormattedMessage
+                                        id='BoardTemplateSelector.creating-board'
+                                        defaultMessage='Creating board...'
+                                    />
+                                }
                             >
                                 <FormattedMessage
                                     id='BoardTemplateSelector.create-empty-board'
                                     defaultMessage='Create empty board'
                                 />
-                            </Button>
+                            </LoadingButton>
                         </div>
                     </div>
                     <div className='templates-content'>
@@ -211,16 +218,22 @@ const BoardTemplateSelector = (props: Props) => {
                             <BoardTemplateSelectorPreview activeTemplate={activeTemplate}/>
                         </div>
                         <div className='buttons'>
-                            <Button
+                            <LoadingButton
                                 filled={true}
                                 size={'medium'}
                                 onClick={handleUseTemplate}
+                                loadingText={
+                                    <FormattedMessage
+                                        id='BoardTemplateSelector.creating-board'
+                                        defaultMessage='Creating board...'
+                                    />
+                                }
                             >
                                 <FormattedMessage
                                     id='BoardTemplateSelector.use-this-template'
                                     defaultMessage='Use this template'
                                 />
-                            </Button>
+                            </LoadingButton>
                         </div>
                     </div>
                 </div>

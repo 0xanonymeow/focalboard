@@ -8,6 +8,7 @@ import mutator from '../../mutator'
 import {useAppSelector} from '../../store/hooks'
 import {Utils} from '../../utils'
 import Button from '../../widgets/buttons/button'
+import LoadingButton from '../../widgets/buttons/loadingButton'
 
 import {MarkdownEditor} from '../markdownEditor'
 
@@ -31,22 +32,28 @@ type Props = {
 
 const CommentsList = (props: Props) => {
     const [newComment, setNewComment] = useState('')
+    const [isSending, setIsSending] = useState(false)
     const me = useAppSelector<IUser|null>(getMe)
     const canDeleteOthersComments = useHasCurrentBoardPermissions([Permission.DeleteOthersComments])
 
-    const onSendClicked = () => {
+    const onSendClicked = async () => {
         const commentText = newComment
-        if (commentText) {
+        if (commentText && !isSending) {
             const {cardId, boardId} = props
             Utils.log(`Send comment: ${commentText}`)
             Utils.assertValue(cardId)
 
-            const comment = createCommentBlock()
-            comment.parentId = cardId
-            comment.boardId = boardId
-            comment.title = commentText
-            mutator.insertBlock(boardId, comment, 'add comment')
-            setNewComment('')
+            setIsSending(true)
+            try {
+                const comment = createCommentBlock()
+                comment.parentId = cardId
+                comment.boardId = boardId
+                comment.title = commentText
+                await mutator.insertBlock(boardId, comment, 'add comment')
+                setNewComment('')
+            } finally {
+                setIsSending(false)
+            }
         }
     }
 
@@ -71,15 +78,22 @@ const CommentsList = (props: Props) => {
             />
 
             {newComment &&
-            <Button
+            <LoadingButton
                 filled={true}
                 onClick={onSendClicked}
+                loading={isSending}
+                loadingText={
+                    <FormattedMessage
+                        id='CommentsList.sending'
+                        defaultMessage='Sending...'
+                    />
+                }
             >
                 <FormattedMessage
                     id='CommentsList.send'
                     defaultMessage='Send'
                 />
-            </Button>
+            </LoadingButton>
             }
 
             <AddCommentTourStep/>

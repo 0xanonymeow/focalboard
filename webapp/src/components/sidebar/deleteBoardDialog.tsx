@@ -5,6 +5,7 @@ import {FormattedMessage, useIntl} from 'react-intl'
 
 import {Utils} from '../../utils'
 import Button from '../../widgets/buttons/button'
+import LoadingButton from '../../widgets/buttons/loadingButton'
 import {sendFlashMessage} from '../flashMessages'
 
 import Dialog from '../dialog'
@@ -75,10 +76,11 @@ export default function DeleteBoardDialog(props: Props): JSX.Element {
                                 defaultMessage='Cancel'
                             />
                         </Button>
-                        <Button
+                        <LoadingButton
                             size={'medium'}
                             filled={true}
                             danger={true}
+                            loading={isSubmitting}
                             onClick={async (e: React.MouseEvent) => {
                                 e.stopPropagation()
                                 try {
@@ -100,12 +102,18 @@ export default function DeleteBoardDialog(props: Props): JSX.Element {
                                     })
                                 }
                             }}
+                            loadingText={
+                                <FormattedMessage
+                                    id='DeleteBoardDialog.deleting'
+                                    defaultMessage='Deleting...'
+                                />
+                            }
                         >
                             <FormattedMessage
                                 id='DeleteBoardDialog.confirm-delete'
                                 defaultMessage='Delete'
                             />
-                        </Button>
+                        </LoadingButton>
                     </div>
                 </div>
             </Dialog>

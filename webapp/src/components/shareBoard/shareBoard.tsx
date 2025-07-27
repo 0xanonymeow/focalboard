@@ -327,7 +327,7 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
                 <div className='user-item'>
                     <div className='ml-3'>
                         <strong>{user.username || user.email || 'Unknown User'}</strong>
-                        {user.email && <strong className='ml-2 text-light'>({user.email})</strong>}
+                        {user.username && user.email && <strong className='ml-2 text-light'>({user.email})</strong>}
                         <GuestBadge show={Boolean(user?.is_guest)}/>
                         <AdminBadge permissions={user.permissions}/>
                     </div>

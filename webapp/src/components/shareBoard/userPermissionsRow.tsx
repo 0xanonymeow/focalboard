@@ -69,7 +69,7 @@ const UserPermissionsRow = (props: Props): JSX.Element => {
                 <div className='ml-3'>
                     {isMe && <strong className='text-light'>{intl.formatMessage({id: 'ShareBoard.userPermissionsYouText', defaultMessage: '(You)'})}</strong>}
                     <strong>{isMe ? ' ' : ''}{user.username || user.email || 'Unknown User'}</strong>
-                    {user.email && <strong className='ml-2 text-light'>({user.email})</strong>}
+                    {user.username && user.email && <strong className='ml-2 text-light'>({user.email})</strong>}
                     <GuestBadge show={user.is_guest}/>
                     <AdminBadge permissions={user.permissions}/>
                 </div>

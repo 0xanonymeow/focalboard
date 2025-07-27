@@ -49,6 +49,11 @@ func (a *App) GetBoardInvitation(token string) (*model.BoardInvitation, error) {
 	return a.store.GetBoardInvitationByToken(token)
 }
 
+// GetInvitation retrieves a board invitation by token (alias for GetBoardInvitation)
+func (a *App) GetInvitation(token string) (*model.BoardInvitation, error) {
+	return a.GetBoardInvitation(token)
+}
+
 // UpdateBoardInvitation updates a board invitation
 func (a *App) UpdateBoardInvitation(invitation *model.BoardInvitation) error {
 	return a.store.UpdateBoardInvitation(invitation)

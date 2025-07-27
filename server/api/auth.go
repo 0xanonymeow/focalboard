@@ -202,15 +202,32 @@ func (a *API) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 	// Validate token
 	if len(registerData.Token) > 0 {
-		team, err2 := a.app.GetRootTeam()
-		if err2 != nil {
-			a.errorResponse(w, r, err2)
-			return
-		}
+		// Check if this is an invitation token
+		if strings.HasPrefix(registerData.Token, "invitation:") {
+			invitationToken := strings.TrimPrefix(registerData.Token, "invitation:")
+			// Validate the invitation token and email
+			invitation, err := a.app.GetInvitation(invitationToken)
+			if err != nil {
+				a.errorResponse(w, r, model.NewErrUnauthorized("invalid invitation token"))
+				return
+			}
+			if invitation.Email != registerData.Email {
+				a.errorResponse(w, r, model.NewErrUnauthorized("email does not match invitation"))
+				return
+			}
+			// Valid invitation, allow registration
+		} else {
+			// Regular signup token
+			team, err2 := a.app.GetRootTeam()
+			if err2 != nil {
+				a.errorResponse(w, r, err2)
+				return
+			}
 
-		if registerData.Token != team.SignupToken {
-			a.errorResponse(w, r, model.NewErrUnauthorized("invalid token"))
-			return
+			if registerData.Token != team.SignupToken {
+				a.errorResponse(w, r, model.NewErrUnauthorized("invalid token"))
+				return
+			}
 		}
 	} else {
 		// No signup token, check if no active users

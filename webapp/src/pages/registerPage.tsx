@@ -34,13 +34,19 @@ const RegisterPage = () => {
     const handleRegister = async (): Promise<void> => {
         // Validate email matches invitation if coming from invitation
         const invitationEmail = localStorage.getItem('invitation_email')
+        const invitationToken = localStorage.getItem('invitation_token')
         if (invitationEmail && email !== invitationEmail) {
             setErrorMessage('Email must match the invitation email address')
             return
         }
 
         const queryString = new URLSearchParams(window.location.search)
-        const signupToken = queryString.get('t') || ''
+        let signupToken = queryString.get('t') || ''
+        
+        // If coming from invitation and no signup token, use invitation token as indicator
+        if (!signupToken && invitationToken) {
+            signupToken = 'invitation:' + invitationToken
+        }
 
         const response = await client.register(email, username, password, signupToken)
         if (response.code === 200) {

@@ -184,8 +184,15 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
     }
 
     const onUpdateBoardMember = (member: BoardMember, newPermission: string) => {
+        // Check if this is the last admin
         if (member.userId === me?.id && isLastAdmin(Object.values(members))) {
             sendFlashMessage({content: intl.formatMessage({id: 'shareBoard.lastAdmin', defaultMessage: 'Boards must have at least one Administrator'}), severity: 'low'})
+            return
+        }
+        
+        // Owners can't change their own role (except through transfer)
+        if (member.userId === me?.id && member.schemeOwner && newPermission !== MemberRole.Owner) {
+            sendFlashMessage({content: intl.formatMessage({id: 'shareBoard.ownerCantChangeRole', defaultMessage: 'Board owners cannot change their own role. Transfer ownership to another user first.'}), severity: 'low'})
             return
         }
 
@@ -196,32 +203,44 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
         } as BoardMember
 
         switch (newPermission) {
-        case MemberRole.Admin:
-            if (member.schemeAdmin) {
+        case MemberRole.Owner:
+            if (member.schemeOwner) {
                 return
             }
+            newMember.schemeOwner = true
+            newMember.schemeAdmin = true
+            newMember.schemeEditor = true
+            break
+        case MemberRole.Admin:
+            if (!member.schemeOwner && member.schemeAdmin) {
+                return
+            }
+            newMember.schemeOwner = false
             newMember.schemeAdmin = true
             newMember.schemeEditor = true
             break
         case MemberRole.Editor:
-            if (!member.schemeAdmin && member.schemeEditor) {
+            if (!member.schemeOwner && !member.schemeAdmin && member.schemeEditor) {
                 return
             }
+            newMember.schemeOwner = false
             newMember.schemeAdmin = false
             newMember.schemeEditor = true
             break
         case MemberRole.Commenter:
-            if (!member.schemeAdmin && !member.schemeEditor && member.schemeCommenter) {
+            if (!member.schemeOwner && !member.schemeAdmin && !member.schemeEditor && member.schemeCommenter) {
                 return
             }
+            newMember.schemeOwner = false
             newMember.schemeAdmin = false
             newMember.schemeEditor = false
             newMember.schemeCommenter = true
             break
         case MemberRole.Viewer:
-            if (!member.schemeAdmin && !member.schemeEditor && !member.schemeCommenter && member.schemeViewer) {
+            if (!member.schemeOwner && !member.schemeAdmin && !member.schemeEditor && !member.schemeCommenter && member.schemeViewer) {
                 return
             }
+            newMember.schemeOwner = false
             newMember.schemeAdmin = false
             newMember.schemeEditor = false
             newMember.schemeCommenter = false
@@ -239,6 +258,13 @@ export default function ShareBoardDialog(props: Props): JSX.Element {
             sendFlashMessage({content: intl.formatMessage({id: 'shareBoard.lastAdmin', defaultMessage: 'Boards must have at least one Administrator'}), severity: 'low'})
             return
         }
+        
+        // Owners can't delete themselves
+        if (member.userId === me?.id && member.schemeOwner) {
+            sendFlashMessage({content: intl.formatMessage({id: 'shareBoard.ownerCantDelete', defaultMessage: 'Board owners cannot remove themselves. Transfer ownership to another user first.'}), severity: 'low'})
+            return
+        }
+        
         mutator.deleteBoardMember(member)
     }
 

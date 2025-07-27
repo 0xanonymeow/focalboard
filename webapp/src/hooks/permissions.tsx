@@ -23,22 +23,26 @@ export const useHasPermissions = (teamId: string, boardId: string, permissions: 
         return false
     }
 
-    const adminPermissions = [Permission.ManageBoardType, Permission.DeleteBoard, Permission.ShareBoard, Permission.ManageBoardRoles, Permission.DeleteOthersComments]
+    const ownerPermissions = [Permission.ManageBoardType, Permission.DeleteBoard, Permission.ShareBoard, Permission.ManageBoardRoles, Permission.DeleteOthersComments]
+    const adminPermissions = [Permission.ManageBoardType, Permission.ShareBoard, Permission.ManageBoardRoles, Permission.DeleteOthersComments]
     const editorPermissions = [Permission.ManageBoardCards, Permission.ManageBoardProperties]
     const commenterPermissions = [Permission.CommentBoardCards]
     const viewerPermissions = [Permission.ViewBoard]
 
     for (const permission of permissions) {
-        if (adminPermissions.includes(permission) && member.schemeAdmin) {
+        if (ownerPermissions.includes(permission) && member.schemeOwner) {
             return true
         }
-        if (editorPermissions.includes(permission) && (member.schemeAdmin || member.schemeEditor || board.minimumRole === MemberRole.Editor)) {
+        if (adminPermissions.includes(permission) && (member.schemeOwner || member.schemeAdmin)) {
             return true
         }
-        if (commenterPermissions.includes(permission) && (member.schemeAdmin || member.schemeEditor || member.schemeCommenter || board.minimumRole === MemberRole.Commenter || board.minimumRole === MemberRole.Editor)) {
+        if (editorPermissions.includes(permission) && (member.schemeOwner || member.schemeAdmin || member.schemeEditor || board.minimumRole === MemberRole.Editor)) {
             return true
         }
-        if (viewerPermissions.includes(permission) && (member.schemeAdmin || member.schemeEditor || member.schemeCommenter || member.schemeViewer || board.minimumRole === MemberRole.Viewer || board.minimumRole === MemberRole.Commenter || board.minimumRole === MemberRole.Editor)) {
+        if (commenterPermissions.includes(permission) && (member.schemeOwner || member.schemeAdmin || member.schemeEditor || member.schemeCommenter || board.minimumRole === MemberRole.Commenter || board.minimumRole === MemberRole.Editor)) {
+            return true
+        }
+        if (viewerPermissions.includes(permission) && (member.schemeOwner || member.schemeAdmin || member.schemeEditor || member.schemeCommenter || member.schemeViewer || board.minimumRole === MemberRole.Viewer || board.minimumRole === MemberRole.Commenter || board.minimumRole === MemberRole.Editor)) {
             return true
         }
     }

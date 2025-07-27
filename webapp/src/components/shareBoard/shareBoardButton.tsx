@@ -11,6 +11,8 @@ import {getCurrentBoard} from '../../store/boards'
 import Globe from '../../widgets/icons/globe'
 import LockOutline from '../../widgets/icons/lockOutline'
 import {BoardTypeOpen} from '../../blocks/board'
+import {Permission} from '../../constants'
+import {useHasPermissions} from '../../hooks/permissions'
 
 import './shareBoardButton.scss'
 
@@ -22,6 +24,15 @@ type Props = {
 const ShareBoardButton = (props: Props) => {
     const [showShareDialog, setShowShareDialog] = useState(false)
     const board = useAppSelector(getCurrentBoard)
+    
+    // Check if user has permission to share or invite
+    const canShare = useHasPermissions(board.teamId, board.id, [Permission.ShareBoard])
+    const canInvite = useHasPermissions(board.teamId, board.id, [Permission.ManageBoardRoles])
+    
+    // Hide button if user has neither permission
+    if (!canShare && !canInvite) {
+        return null
+    }
 
     const iconForBoardType = () => {
         if (board.type === BoardTypeOpen) {

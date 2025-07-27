@@ -51,7 +51,8 @@ func (a *App) UpdateUserPasswordByID(userID, password string) error {
 
 // SendPasswordResetEmail sends a password reset email
 func (a *App) SendPasswordResetEmail(email, resetURL string) error {
-	subject := "Reset your Focalboard password"
+	// Note: Email subject would be "Reset your Focalboard password"
+	// but SendMessage doesn't support subject parameter
 	body := fmt.Sprintf(`Hello,
 
 You requested to reset your password for Focalboard.

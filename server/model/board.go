@@ -21,6 +21,7 @@ const (
 	BoardRoleCommenter BoardRole = "commenter"
 	BoardRoleEditor    BoardRole = "editor"
 	BoardRoleAdmin     BoardRole = "admin"
+	BoardRoleOwner     BoardRole = "owner"
 )
 
 const (
@@ -186,6 +187,10 @@ type BoardMember struct {
 	// Minimum role because the board configuration
 	// required: false
 	MinimumRole string `json:"minimumRole"`
+
+	// Marks the user as an owner of the board
+	// required: true
+	SchemeOwner bool `json:"schemeOwner"`
 
 	// Marks the user as an admin of the board
 	// required: true

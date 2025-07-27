@@ -18,6 +18,7 @@ enum MemberRole {
     Commenter = 'commenter',
     Editor = 'editor',
     Admin = 'admin',
+    Owner = 'owner',
     None = '',
 }
 
@@ -64,6 +65,7 @@ type BoardMember = {
     userId: string
     roles?: string
     minimumRole: MemberRole
+    schemeOwner: boolean
     schemeAdmin: boolean
     schemeEditor: boolean
     schemeCommenter: boolean

@@ -99,35 +99,15 @@ func ReadConfigFile(configFilePath string) (*Configuration, error) {
 
 	viper.SetEnvPrefix("focalboard")
 	viper.AutomaticEnv() // read config values from env like FOCALBOARD_SERVERROOT=...
-	viper.SetDefault("ServerRoot", DefaultServerRoot)
-	viper.SetDefault("DBPingAttempts", DBPingAttempts)
-	viper.SetDefault("Port", DefaultPort)
-	viper.SetDefault("DBType", "sqlite3")
-	viper.SetDefault("DBConfigString", "./focalboard.db")
-	viper.SetDefault("DBTablePrefix", "")
-	viper.SetDefault("SecureCookie", false)
-	viper.SetDefault("WebPath", "./pack")
-	viper.SetDefault("FilesPath", "./files")
-	viper.SetDefault("FilesDriver", "local")
-	viper.SetDefault("Telemetry", true)
-	viper.SetDefault("TelemetryID", "")
-	viper.SetDefault("WebhookUpdate", nil)
-	viper.SetDefault("SessionExpireTime", 60*60*24*30) // 30 days session lifetime
-	viper.SetDefault("SessionRefreshTime", 60*60*5)    // 5 minutes session refresh
-	viper.SetDefault("LocalOnly", false)
-	viper.SetDefault("EnableLocalMode", false)
-	viper.SetDefault("LocalModeSocketLocation", "/var/tmp/focalboard_local.socket")
-	viper.SetDefault("EnablePublicSharedBoards", false)
-	viper.SetDefault("AuthMode", "native")
-	viper.SetDefault("NotifyFreqCardSeconds", 120)    // 2 minutes after last card edit
-	viper.SetDefault("NotifyFreqBoardSeconds", 86400) // 1 day after last card edit
-	viper.SetDefault("EnableDataRetention", false)
-	viper.SetDefault("FeatureFlags", map[string]string{})
-	viper.SetDefault("DataRetentionDays", 365) // 1 year is default
-	viper.SetDefault("PrometheusAddress", "")
-	viper.SetDefault("TeammateNameDisplay", "username")
-	viper.SetDefault("ShowEmailAddress", false)
-	viper.SetDefault("ShowFullName", false)
+	
+	// Set all defaults using the helper function
+	setDefaults()
+	
+	// Bind environment variables using the helper function
+	bindEnvironmentVariables()
+	
+	// Apply pre-unmarshal environment overrides
+	applyEnvironmentOverridesPre()
 
 	err := viper.ReadInConfig() // Find and read the config file
 	if err != nil {             // Handle errors reading the config file
@@ -140,6 +120,9 @@ func ReadConfigFile(configFilePath string) (*Configuration, error) {
 	if err != nil {
 		return nil, err
 	}
+	
+	// Apply post-unmarshal environment overrides (including S3 endpoint sanitization)
+	applyEnvironmentOverridesPost(&configuration)
 
 	log.Println("readConfigFile")
 	log.Printf("%+v", removeSecurityData(configuration))

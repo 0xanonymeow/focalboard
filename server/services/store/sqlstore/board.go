@@ -412,7 +412,40 @@ func (s *SQLStore) patchBoard(db sq.BaseRunner, boardID string, boardPatch *mode
 }
 
 func (s *SQLStore) deleteBoard(db sq.BaseRunner, boardID, userID string) error {
-	return s.deleteBoardAndChildren(db, boardID, userID, false)
+	// Delete the board and its blocks
+	if err := s.deleteBoardAndChildren(db, boardID, userID, false); err != nil {
+		return err
+	}
+
+	// Clean up related tables to prevent orphaned data
+	// Delete board invitations
+	if _, err := s.getQueryBuilder(db).
+		Delete(s.tablePrefix + "board_invitations").
+		Where(sq.Eq{"board_id": boardID}).
+		Exec(); err != nil {
+		s.logger.Error("Failed to delete board invitations", mlog.String("boardID", boardID), mlog.Err(err))
+		return err
+	}
+
+	// Delete category boards
+	if _, err := s.getQueryBuilder(db).
+		Delete(s.tablePrefix + "category_boards").
+		Where(sq.Eq{"board_id": boardID}).
+		Exec(); err != nil {
+		s.logger.Error("Failed to delete category boards", mlog.String("boardID", boardID), mlog.Err(err))
+		return err
+	}
+
+	// Delete board member history
+	if _, err := s.getQueryBuilder(db).
+		Delete(s.tablePrefix + "board_members_history").
+		Where(sq.Eq{"board_id": boardID}).
+		Exec(); err != nil {
+		s.logger.Error("Failed to delete board members history", mlog.String("boardID", boardID), mlog.Err(err))
+		return err
+	}
+
+	return nil
 }
 
 func (s *SQLStore) deleteBoardAndChildren(db sq.BaseRunner, boardID, userID string, keepChildren bool) error {

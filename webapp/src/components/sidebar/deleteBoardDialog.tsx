@@ -1,10 +1,11 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 import React, {useState} from 'react'
-import {FormattedMessage} from 'react-intl'
+import {FormattedMessage, useIntl} from 'react-intl'
 
 import {Utils} from '../../utils'
 import Button from '../../widgets/buttons/button'
+import {sendFlashMessage} from '../flashMessages'
 
 import Dialog from '../dialog'
 import RootPortal from '../rootPortal'
@@ -20,6 +21,7 @@ type Props = {
 
 export default function DeleteBoardDialog(props: Props): JSX.Element {
     const [isSubmitting, setSubmitting] = useState(false)
+    const intl = useIntl()
 
     return (
         <RootPortal>
@@ -88,7 +90,14 @@ export default function DeleteBoardDialog(props: Props): JSX.Element {
                                     setSubmitting(false)
                                     Utils.logError(`Delete board ERROR: ${err}`)
 
-                                    // TODO: display error on screen
+                                    // Display error to user
+                                    sendFlashMessage({
+                                        content: intl.formatMessage({
+                                            id: 'DeleteBoardDialog.error',
+                                            defaultMessage: 'An error occurred while deleting the board. Please try again.',
+                                        }),
+                                        severity: 'high',
+                                    })
                                 }
                             }}
                         >

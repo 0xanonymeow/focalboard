@@ -6,6 +6,8 @@ package app
 import (
 	"errors"
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/mattermost/focalboard/server/model"
 	"github.com/mattermost/focalboard/server/services/notify"
@@ -449,8 +451,33 @@ func (a *App) DeleteBoard(boardID, userID string) error {
 		return err
 	}
 
-	if err := a.store.DeleteBoard(boardID, userID); err != nil {
-		return err
+	// Retry logic for transient errors
+	const maxRetries = 3
+	var deleteErr error
+	for i := 0; i < maxRetries; i++ {
+		deleteErr = a.store.DeleteBoard(boardID, userID)
+		if deleteErr == nil {
+			break
+		}
+		
+		// Check if error is retryable (e.g., database connection issues)
+		if !isRetryableError(deleteErr) {
+			break
+		}
+		
+		// Exponential backoff: 100ms, 200ms, 400ms
+		backoffMs := 100 * (1 << i)
+		time.Sleep(time.Duration(backoffMs) * time.Millisecond)
+		
+		a.logger.Warn("Retrying board deletion due to transient error",
+			mlog.String("boardID", boardID),
+			mlog.Int("attempt", i+1),
+			mlog.Err(deleteErr),
+		)
+	}
+	
+	if deleteErr != nil {
+		return deleteErr
 	}
 
 	a.blockChangeNotifier.Enqueue(func() error {
@@ -459,6 +486,32 @@ func (a *App) DeleteBoard(boardID, userID string) error {
 	})
 
 	return nil
+}
+
+// isRetryableError checks if an error is transient and should be retried
+func isRetryableError(err error) bool {
+	if err == nil {
+		return false
+	}
+	
+	// Check for common retryable database errors
+	errMsg := err.Error()
+	retryablePatterns := []string{
+		"connection refused",
+		"connection reset",
+		"broken pipe",
+		"timeout",
+		"deadlock",
+		"try restarting transaction",
+	}
+	
+	for _, pattern := range retryablePatterns {
+		if strings.Contains(strings.ToLower(errMsg), pattern) {
+			return true
+		}
+	}
+	
+	return false
 }
 
 func (a *App) GetMembersForBoard(boardID string) ([]*model.BoardMember, error) {

@@ -38,7 +38,7 @@ export const FlashMessages = React.memo((props: Props) => {
                     clearTimeout(timeoutId)
                     setTimeoutId(null)
                 }
-                
+
                 // Only set timeout for non-persistent messages
                 if (!newMessage.persistent) {
                     setTimeoutId(setTimeout(handleFadeOut, props.milliseconds - 200))
@@ -46,7 +46,7 @@ export const FlashMessages = React.memo((props: Props) => {
                 setMessage(newMessage)
             }
         })
-        
+
         const unsubscribeClear = emitter.on('clear', () => {
             if (isSubscribed) {
                 if (timeoutId) {
@@ -56,7 +56,7 @@ export const FlashMessages = React.memo((props: Props) => {
                 handleFadeOut()
             }
         })
-        
+
         return () => {
             isSubscribed = false
             unsubscribeMessage()
@@ -79,7 +79,7 @@ export const FlashMessages = React.memo((props: Props) => {
         if (message?.persistent) {
             return
         }
-        
+
         if (timeoutId) {
             clearTimeout(timeoutId)
             setTimeoutId(null)

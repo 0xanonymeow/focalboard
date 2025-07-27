@@ -52,7 +52,7 @@ const PendingInvitations = React.memo(React.forwardRef<{refresh: () => void}, Pr
 
             // Filter out used invitations to show only pending ones
             const pending = pendingInvitations.filter((inv) => !inv.usedAt && new Date(inv.expiresAt * 1000) > new Date())
-            
+
             setInvitations(pending)
         } catch (error) {
             // eslint-disable-next-line no-console
@@ -69,12 +69,12 @@ const PendingInvitations = React.memo(React.forwardRef<{refresh: () => void}, Pr
     // Update countdown timers every second
     useEffect(() => {
         const interval = setInterval(() => {
-            setInvitations(prev => {
-                const updated = prev.map(invitation => {
+            setInvitations((prev) => {
+                const updated = prev.map((invitation) => {
                     if (invitation.resendCooldownSeconds && invitation.resendCooldownSeconds > 0) {
                         return {
                             ...invitation,
-                            resendCooldownSeconds: invitation.resendCooldownSeconds - 1
+                            resendCooldownSeconds: invitation.resendCooldownSeconds - 1,
                         }
                     }
                     return invitation
@@ -82,13 +82,13 @@ const PendingInvitations = React.memo(React.forwardRef<{refresh: () => void}, Pr
                 return updated
             })
         }, 1000)
-        
+
         return () => clearInterval(interval)
     }, [])
 
     // Expose refresh function to parent via ref
     React.useImperativeHandle(ref, () => ({
-        refresh: loadInvitations
+        refresh: loadInvitations,
     }))
 
     const handleResendInvitation = async (invitation: BoardInvitation) => {
@@ -96,6 +96,7 @@ const PendingInvitations = React.memo(React.forwardRef<{refresh: () => void}, Pr
             const success = await client.resendInvitation(invitation.id)
             if (success) {
                 sendFlashMessage({content: intl.formatMessage({id: 'ShareBoard.invitation-resent', defaultMessage: 'Invitation resent successfully'}), severity: 'normal'})
+
                 // Refresh invitations to get updated cooldown from server
                 loadInvitations()
             } else {
@@ -104,7 +105,7 @@ const PendingInvitations = React.memo(React.forwardRef<{refresh: () => void}, Pr
         } catch (error: any) {
             // eslint-disable-next-line no-console
             console.error('Failed to resend invitation:', error)
-            
+
             // Check if it's a cooldown error from server
             if (error.message && error.message.includes('wait') && error.message.includes('seconds')) {
                 sendFlashMessage({content: error.message, severity: 'high'})

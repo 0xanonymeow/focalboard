@@ -35,12 +35,12 @@ const App = (props: Props): JSX.Element => {
         const initializeApp = async () => {
             // Try to auto-login for single-user mode before fetching user info
             await octoClient.autoLoginSingleUser()
-            
+
             dispatch(fetchLanguage())
             dispatch(fetchMe())
             dispatch(fetchClientConfig())
         }
-        
+
         initializeApp()
     }, [])
 

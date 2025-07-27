@@ -57,10 +57,10 @@ const EmailInvite = ({onInvitationSent}: Props) => {
         try {
             // Check if email is already invited
             const existingInvitations = await client.getBoardInvitations(board.id)
-            const existingInvitation = existingInvitations.find(inv => 
-                inv.email.toLowerCase() === email.toLowerCase() && 
-                !inv.usedAt && 
-                new Date(inv.expiresAt * 1000) > new Date()
+            const existingInvitation = existingInvitations.find((inv) =>
+                inv.email.toLowerCase() === email.toLowerCase() &&
+                !inv.usedAt &&
+                new Date(inv.expiresAt * 1000) > new Date(),
             )
 
             if (existingInvitation) {
@@ -76,7 +76,7 @@ const EmailInvite = ({onInvitationSent}: Props) => {
             }
 
             const success = await client.sendBoardInvitation(board.id, email, role)
-            
+
             if (success) {
                 sendFlashMessage({
                     content: intl.formatMessage({
@@ -129,7 +129,7 @@ const EmailInvite = ({onInvitationSent}: Props) => {
                     />
                 </div>
             </div>
-            
+
             <div className='EmailInvite__form'>
                 <div className='EmailInvite__input-group'>
                     <input
@@ -144,7 +144,7 @@ const EmailInvite = ({onInvitationSent}: Props) => {
                         onKeyPress={handleKeyPress}
                         disabled={isLoading}
                     />
-                    
+
                     <select
                         className='EmailInvite__role-select'
                         value={role}
@@ -176,7 +176,7 @@ const EmailInvite = ({onInvitationSent}: Props) => {
                             })}
                         </option>
                     </select>
-                    
+
                     <Button
                         emphasis='primary'
                         size='medium'

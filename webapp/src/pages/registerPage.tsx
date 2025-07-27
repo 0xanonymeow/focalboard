@@ -9,7 +9,6 @@ import {fetchMe, getLoggedIn} from '../store/users'
 
 import Button from '../widgets/buttons/button'
 import client from '../octoClient'
-import {Utils} from '../utils'
 import './registerPage.scss'
 
 const RegisterPage = () => {
@@ -42,7 +41,7 @@ const RegisterPage = () => {
 
         const queryString = new URLSearchParams(window.location.search)
         let signupToken = queryString.get('t') || ''
-        
+
         // If coming from invitation and no signup token, use invitation token as indicator
         if (!signupToken && invitationToken) {
             signupToken = 'invitation:' + invitationToken
@@ -53,16 +52,16 @@ const RegisterPage = () => {
             const logged = await client.login(username, password)
             if (logged) {
                 await dispatch(fetchMe())
-                
+
                 // Check for stored invitation token
-                const invitationToken = localStorage.getItem('invitation_token')
-                if (invitationToken) {
+                const storedInvitationToken = localStorage.getItem('invitation_token')
+                if (storedInvitationToken) {
                     localStorage.removeItem('invitation_token')
                     localStorage.removeItem('invitation_email')
-                    history.push(`/invite/${invitationToken}`)
+                    history.push(`/invite/${storedInvitationToken}`)
                     return
                 }
-                
+
                 history.push('/')
             }
         } else if (response.code === 401) {
@@ -99,7 +98,7 @@ const RegisterPage = () => {
                         readOnly={isFromInvitation}
                         style={{
                             backgroundColor: isFromInvitation ? 'rgb(var(--center-channel-bg-rgb))' : undefined,
-                            cursor: isFromInvitation ? 'not-allowed' : undefined
+                            cursor: isFromInvitation ? 'not-allowed' : undefined,
                         }}
                     />
                     {isFromInvitation && (

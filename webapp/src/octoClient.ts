@@ -141,7 +141,7 @@ class OctoClient {
         // Check if token is provided via URL parameter
         const urlParams = new URLSearchParams(window.location.search)
         const urlToken = urlParams.get('token')
-        
+
         // Try tokens in order of preference:
         // 1. URL parameter
         // 2. localStorage fallback (from previous successful login)
@@ -154,7 +154,7 @@ class OctoClient {
             'focalboard',
             'single-user',
         ].filter(Boolean) as string[]
-        
+
         for (const testToken of tokensToTry) {
             this.token = testToken
             try {
@@ -1150,6 +1150,7 @@ class OctoClient {
         }
 
         const limits = (await this.getJson(response, {})) as BoardsCloudLimits
+
         // Only log cloud limits if they are actually defined (cloud/hosted environment)
         if (limits.cards !== undefined && limits.views !== undefined) {
             Utils.log(`Cloud limits: cards=${limits.cards}   views=${limits.views}`)

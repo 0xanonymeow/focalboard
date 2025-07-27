@@ -66,20 +66,20 @@ const InvitationPage = (): JSX.Element => {
         setAccepting(true)
         try {
             await client.acceptInvitation(token)
-            
+
             sendFlashMessage({
                 content: intl.formatMessage({
                     id: 'InvitationPage.accepted',
-                    defaultMessage: 'Invitation accepted! Welcome to the board.'
+                    defaultMessage: 'Invitation accepted! Welcome to the board.',
                 }),
-                severity: 'normal'
+                severity: 'normal',
             })
 
             // Redirect to the board
             history.push(`/board/${invitationInfo.boardId}`)
         } catch (err: any) {
             console.error('Failed to accept invitation:', err)
-            
+
             let errorMessage = 'Failed to accept invitation'
             if (err.message?.includes('email does not match')) {
                 errorMessage = 'This invitation is for a different email address'
@@ -91,7 +91,7 @@ const InvitationPage = (): JSX.Element => {
 
             sendFlashMessage({
                 content: errorMessage,
-                severity: 'high'
+                severity: 'high',
             })
         } finally {
             setAccepting(false)

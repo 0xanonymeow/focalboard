@@ -25,7 +25,7 @@ const LoginPage = () => {
         const logged = await client.login(username, password)
         if (logged) {
             await dispatch(fetchMe())
-            
+
             // Check for stored invitation token
             const invitationToken = localStorage.getItem('invitation_token')
             if (invitationToken) {
@@ -34,7 +34,7 @@ const LoginPage = () => {
                 history.push(`/invite/${invitationToken}`)
                 return
             }
-            
+
             if (queryParams) {
                 history.push(queryParams.get('r') || '/')
             } else {

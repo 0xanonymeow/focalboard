@@ -2,8 +2,9 @@
 // See LICENSE.txt for license information.
 import React from 'react'
 
-import Button from './button'
 import LoadingIcon from '../icons/loadingIcon'
+
+import Button from './button'
 
 type Props = {
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>

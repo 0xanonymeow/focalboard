@@ -28,14 +28,14 @@ const ForgotPasswordPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        
+
         if (!email) {
             sendFlashMessage({
                 content: intl.formatMessage({
                     id: 'ForgotPasswordPage.email-required',
-                    defaultMessage: 'Please enter your email address'
+                    defaultMessage: 'Please enter your email address',
                 }),
-                severity: 'low'
+                severity: 'low',
             })
             return
         }
@@ -52,15 +52,15 @@ const ForgotPasswordPage = () => {
                 }
                 sendFlashMessage({
                     content: error.message,
-                    severity: 'low'
+                    severity: 'low',
                 })
             } else {
                 sendFlashMessage({
                     content: intl.formatMessage({
                         id: 'ForgotPasswordPage.error',
-                        defaultMessage: 'An error occurred. Please try again.'
+                        defaultMessage: 'An error occurred. Please try again.',
                     }),
-                    severity: 'high'
+                    severity: 'high',
                 })
             }
         }
@@ -105,7 +105,7 @@ const ForgotPasswordPage = () => {
 
     return (
         <div className='ForgotPasswordPage'>
-            <form 
+            <form
                 className='forgot-password-container'
                 onSubmit={handleSubmit}
             >
@@ -123,7 +123,7 @@ const ForgotPasswordPage = () => {
                         />
                     </p>
                 </div>
-                
+
                 <div className='forgot-password-content'>
                     <div className='form-group'>
                         <label htmlFor='email'>
@@ -140,10 +140,10 @@ const ForgotPasswordPage = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder={intl.formatMessage({
                                 id: 'ForgotPasswordPage.email-placeholder',
-                                defaultMessage: 'Enter your email'
+                                defaultMessage: 'Enter your email',
                             })}
-                            autoFocus
-                            required
+                            autoFocus={true}
+                            required={true}
                         />
                     </div>
 
@@ -158,9 +158,9 @@ const ForgotPasswordPage = () => {
                     )}
 
                     <LoadingButton
-                        submit
+                        submit={true}
                         size='medium'
-                        filled
+                        filled={true}
                         disabled={cooldownSeconds > 0}
                         loadingText={
                             <FormattedMessage

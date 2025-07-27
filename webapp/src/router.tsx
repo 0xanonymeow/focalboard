@@ -1,6 +1,6 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import {
     Router,
     Switch,
@@ -63,27 +63,28 @@ function GlobalErrorRedirect() {
                 sendFlashMessage({
                     content: 'Connection error. Reconnecting...',
                     severity: 'high',
-                    persistent: true
+                    persistent: true,
                 })
-                
+
                 // Start monitoring connection to clear error when reconnected
                 const checkConnection = async () => {
                     try {
                         // Try a simple API call to check if connection is restored
                         await octoClient.getMe()
+
                         // Connection restored - clear the error and flash message
                         clearFlashMessages()
                         dispatch(setGlobalError(''))
                         sendFlashMessage({
                             content: 'Connection restored',
-                            severity: 'normal'
+                            severity: 'normal',
                         })
                     } catch (error) {
                         // Still disconnected, try again in 3 seconds
                         setTimeout(checkConnection, 3000)
                     }
                 }
-                
+
                 // Start checking after 3 seconds
                 setTimeout(checkConnection, 3000)
             } else {

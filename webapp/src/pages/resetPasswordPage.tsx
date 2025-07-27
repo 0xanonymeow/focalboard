@@ -33,28 +33,28 @@ const ResetPasswordPage = () => {
 
     const validateForm = (): boolean => {
         const newErrors: {password?: string, confirmPassword?: string} = {}
-        
+
         if (!password) {
             newErrors.password = intl.formatMessage({
                 id: 'ResetPasswordPage.password-required',
-                defaultMessage: 'Password is required'
+                defaultMessage: 'Password is required',
             })
         } else if (password.length < 8) {
             newErrors.password = intl.formatMessage({
                 id: 'ResetPasswordPage.password-min-length',
-                defaultMessage: 'Password must be at least 8 characters'
+                defaultMessage: 'Password must be at least 8 characters',
             })
         }
 
         if (!confirmPassword) {
             newErrors.confirmPassword = intl.formatMessage({
                 id: 'ResetPasswordPage.confirm-password-required',
-                defaultMessage: 'Please confirm your password'
+                defaultMessage: 'Please confirm your password',
             })
         } else if (password !== confirmPassword) {
             newErrors.confirmPassword = intl.formatMessage({
                 id: 'ResetPasswordPage.passwords-dont-match',
-                defaultMessage: 'Passwords do not match'
+                defaultMessage: 'Passwords do not match',
             })
         }
 
@@ -64,47 +64,47 @@ const ResetPasswordPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        
+
         if (!validateForm()) {
             return
         }
 
         try {
             await client.resetPassword(token, password)
-            
+
             sendFlashMessage({
                 content: intl.formatMessage({
                     id: 'ResetPasswordPage.success',
-                    defaultMessage: 'Password reset successfully! Please log in with your new password.'
+                    defaultMessage: 'Password reset successfully! Please log in with your new password.',
                 }),
-                severity: 'normal'
+                severity: 'normal',
             })
-            
+
             history.push('/login')
         } catch (error: any) {
             if (error.message?.includes('expired')) {
                 sendFlashMessage({
                     content: intl.formatMessage({
                         id: 'ResetPasswordPage.token-expired',
-                        defaultMessage: 'This reset link has expired. Please request a new one.'
+                        defaultMessage: 'This reset link has expired. Please request a new one.',
                     }),
-                    severity: 'high'
+                    severity: 'high',
                 })
             } else if (error.message?.includes('used')) {
                 sendFlashMessage({
                     content: intl.formatMessage({
                         id: 'ResetPasswordPage.token-used',
-                        defaultMessage: 'This reset link has already been used.'
+                        defaultMessage: 'This reset link has already been used.',
                     }),
-                    severity: 'high'
+                    severity: 'high',
                 })
             } else {
                 sendFlashMessage({
                     content: intl.formatMessage({
                         id: 'ResetPasswordPage.error',
-                        defaultMessage: 'An error occurred. Please try again.'
+                        defaultMessage: 'An error occurred. Please try again.',
                     }),
-                    severity: 'high'
+                    severity: 'high',
                 })
             }
         }
@@ -131,7 +131,7 @@ const ResetPasswordPage = () => {
                         </p>
                         <Button
                             size='medium'
-                            filled
+                            filled={true}
                             onClick={() => history.push('/forgot-password')}
                         >
                             <FormattedMessage
@@ -147,7 +147,7 @@ const ResetPasswordPage = () => {
 
     return (
         <div className='ResetPasswordPage'>
-            <form 
+            <form
                 className='reset-password-container'
                 onSubmit={handleSubmit}
             >
@@ -165,7 +165,7 @@ const ResetPasswordPage = () => {
                         />
                     </p>
                 </div>
-                
+
                 <div className='reset-password-content'>
                     <div className='form-group'>
                         <label htmlFor='password'>
@@ -187,10 +187,10 @@ const ResetPasswordPage = () => {
                             }}
                             placeholder={intl.formatMessage({
                                 id: 'ResetPasswordPage.new-password-placeholder',
-                                defaultMessage: 'Enter new password'
+                                defaultMessage: 'Enter new password',
                             })}
-                            autoFocus
-                            required
+                            autoFocus={true}
+                            required={true}
                         />
                         {errors.password && (
                             <div className='error-text'>{errors.password}</div>
@@ -217,9 +217,9 @@ const ResetPasswordPage = () => {
                             }}
                             placeholder={intl.formatMessage({
                                 id: 'ResetPasswordPage.confirm-password-placeholder',
-                                defaultMessage: 'Confirm new password'
+                                defaultMessage: 'Confirm new password',
                             })}
-                            required
+                            required={true}
                         />
                         {errors.confirmPassword && (
                             <div className='error-text'>{errors.confirmPassword}</div>
@@ -227,9 +227,9 @@ const ResetPasswordPage = () => {
                     </div>
 
                     <LoadingButton
-                        submit
+                        submit={true}
                         size='medium'
-                        filled
+                        filled={true}
                         loadingText={
                             <FormattedMessage
                                 id='ResetPasswordPage.resetting'
